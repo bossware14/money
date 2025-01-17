@@ -502,7 +502,7 @@ def UpdateOnline(app,data):
     url = str("https://app-wash.all123th.com/api/")+str(app)
     requests.put(url, data=json.dumps(data), headers=headers)
     url = "http://localhost:"+str(API_PORT)
-    #subprocess.Popen(['chromium-browser','--start-fullscreen','--kiosk',url]) 
+    subprocess.Popen(['chromium-browser','--start-fullscreen','--kiosk',url]) 
 
 @app.route('/sendcoin',methods=['GET'])
 def send_coint():
