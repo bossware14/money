@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>App Money</title>
+    <meta name="msapplication-TileColor" content="#066fd1">
+    <meta name="theme-color" content="#066fd1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="description" content="App">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=K2D:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Doto:wght@100..900&family=Silkscreen:wght@400;700&family=VT323&display=swap');
+    </style>
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css">
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="https://unpkg.com/jquery/dist/jquery.min.js"></script>
+
+    <style>
+        * {
+            font-family: "K2D", serif;
+            font-weight: 400;
+            font-style: normal;
+            cursor: none !important;
+        }
+
+        .alert-dialog {
+            width: 80% !important;
+            max-width: 500px;
+        }
+        .doto {
+            font-family: "Doto", serif !important;
+            font-weight: 700 !important;
+            font-style: normal !important;
+        }
+
+:active {
+            cursor: none !important;
+        }
+:hover {
+            cursor: none !important;
+        }
+
+        .page__content
+        {
+            background: linear-gradient(
+            155deg  ,
+            white 0%,
+            white 65%,
+            paleturquoise 65%,
+            paleturquoise 100%
+            ) !important;
+        }
+
+    </style>
+    <script language="javascript" type="text/javascript">
+        if (window.location.protocol !== "https:" && window.location.hostname !== "localhost") {
+            //window.location.href = "https:" + window.location.href.substring(window.location.protocol.length);
+        }
+    </script>
+
+</head>
+<script>
+    var elem = document.documentElement;
+    function openFullscreen() {
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+            /* Safari */
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+            /* IE11 */
+            elem.msRequestFullscreen();
+        }
+    }
+    var full = 1;
+    function AutoFull() {
+        if (full == 0) {
+            return false;
+        }
+        full = 0;
+        setTimeout(function() {
+            Coud();
+            openFullscreen()
+        }, 10);
+    }
+</script>
+<script src="https://unpkg.com/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+
+<body>
+    <ons-splitter>
+        <ons-splitter-side id="menu" side="left" width="220px" collapse swipeable>
+            <ons-page>
+                <ons-list>
+                    <ons-list-item onclick="fn.load('tab3.html')" tappable>
+                        ชำระเงิน
+                    </ons-list-item>
+                </ons-list>
+            </ons-page>
+        </ons-splitter-side>
+        <ons-splitter-content id="content" page="tab3.html"></ons-splitter-content>
+    </ons-splitter>
+
+
+    <template id="alert-dialog.html">
+        <ons-alert-dialog id="my-alert-dialog" modifier="rowfooter">
+            <div id="alert_title" class="alert-dialog-title">
+                LOGIN
+            </div>
+            <div id="alert_text" class="alert-dialog-content">
+                การเข้าสู่ระบบ สำเร็จ
+            </div>
+            <div class="alert-dialog-footer">
+                <ons-alert-dialog-button onclick="hideAlertDialog()">ตกลง</ons-alert-dialog-button>
+            </div>
+        </ons-alert-dialog>
+    </template>
+
+
+    <template id="dialog.html">
+        <ons-dialog id="my-dialog">
+            <div style="text-align: center; padding: 10px;">
+                <p id="dialog_msg">
+                    This is a simple dialog!
+                </p>
+                <p>
+                    <ons-button onclick="hideDialog('my-dialog')">Close</ons-button>
+                </p>
+            </div>
+        </ons-dialog>
+    </template>
+
+    <template id="tab3.html">
+        <ons-page id="Tab3">
+            <ons-card>
+                <ons-row class="center text-center p-0 m-0">
+                    จำนวนเงิน
+                    <div id="Price" style="height:45px;font-size:32px;text-align:center;padding:0px;margin:0 auto;" class="p-0 m-0 w-100 rounded border center text-center bg-dark text-light">
+                        0
+                    </div>
+                </ons-row>
+            </ons-card>
+            <ons-card>
+                <ons-row>
+                    <ons-col class="me-2">
+                        <div id="card-member m-2">
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <div>
+                                        แสกนเพื่อชำระเงิน
+                                    </div>
+                                    <div>
+                                        <div style="
+    font-size: 80px;
+    border: 5px solid #333;
+    border-radius: 10px;
+    margin: 30px;
+    padding: 5px;"  id="showPrice"></div>
+                                    <img id="payment_qr" class="border rounded" style="width:235px;max-height:235px;" width="100%"
+                                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbF0JgqiEWN6wFHxWQCrIfllBR_qsNVq-1Cg&usqp=CAU">
+                                    </div>
+                                </div>
+                                <div class="col-12 text-center">
+                                    <img style="max-height:50px;" class="mt-2" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdndEW1NXNFi-MBmS8QX-6DgJghX2HpJOh_aMJ0Zjj1TTzNWTgpQa8bqw&s=10">
+                                </div>
+                            </div>
+                        </div>
+                    </ons-col>
+                    <ons-col>
+                        <div class="text-center w-100">
+                            ระบุจำนวนเงิน
+                        </div>
+                        <ul class="d-none pt-2 m-2 list">
+                            <li class="list-item">
+                                <div class="list-item__center">
+                                    <input type="tel" maxlength="10" id="phone" style="font-size:20px;font-weight:900;" class="text-center text-input w-100" placeholder="จำนวนเงิน">
+                                </div>
+                            </li>
+                        </ul>
+                        <div id="padtab">
+                            <ons-row>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE(1)" style="font-size:20px" class="w-100 btn btn-dark">1</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE(2)" style="font-size:20px" class="w-100 btn btn-dark">2</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE(3)" style="font-size:20px" class="w-100 btn btn-dark">3</ons-button>
+                                </ons-col>
+                            </ons-row>
+                            <ons-row>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE(4)" style="font-size:20px" class="w-100 btn btn-dark">4</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE(5)" style="font-size:20px" class="w-100 btn btn-dark">5</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE(6)" style="font-size:20px" class="w-100 btn btn-dark">6</ons-button>
+                                </ons-col>
+                            </ons-row>
+
+                            <ons-row>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE(7)" style="font-size:20px" class="w-100 btn btn-dark">7</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE(8)" style="font-size:20px" class="w-100 btn btn-dark">8</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE(9)" style="font-size:20px" class="w-100 btn btn-dark">9</ons-button>
+                                </ons-col>
+                            </ons-row>
+                            <ons-row>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CLEARNO()" style="font-size:20px" class="w-100 btn btn-danger">-</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE(0)" style="font-size:20px" class="w-100 btn btn-dark">0</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button disabled onclick="ClearAll()" style="font-size:20px" class="w-100 btn">*</ons-button>
+                                </ons-col>
+                            </ons-row>
+                            <ons-row>
+
+                                <ons-col class="p-1 mt-5">
+                                    <ons-button onclick="CONFIRMLOGIN()" style="font-size:18px" class="w-100 btn btn-primary">ยืนยัน</ons-button>
+                                </ons-col>
+                            </ons-row>
+                        </div>
+                    </ons-col>
+                </ons-row>
+            </ons-card>
+            <script>
+
+                var keyref = ''
+var RunCheck = 0;
+
+                function createPayment(amount, ref, username, detail) {
+                    $.getJSON('https://app-wash.all123th.com/api/config', function(json) {
+                        $.getJSON('https://api.d-kub.com/createPayment?authoken='+json.device+'&amount='+amount+'&ref='+ref+'&username='+username+'&detail='+detail,
+                            function(str) {
+RunCheck = 0;
+$('#showPrice').hide();
+                                console.log(str)
+                                keyref = str.key;
+                                checkRef(str.key)
+                                $('#payment_qr').attr('src', str.image);
+                            })
+                    })
+                }
+
+                function checkRef(key) {
+                    $.getJSON('https://api.d-kub.com/swift?key='+key+'&type=json',
+                        function(str) {
+                            console.log(str)
+if(RunCheck >= 5){
+$('.btn').attr('disabled', false);
+$('button').attr('disabled', false);
+createAlertDialog('หมดเวลา', 'กรุณาทำรายการใหม่');
+ClearAll();
+$.getJSON('/lcd?number=0');
+return false;
+}
+
+RunCheck++;
+                            if (str.status == 'success') {
+                                //clearInterval(AUTOCHECK);
+$('#showPrice').show();
+                                $.getJSON('/sendcoin?count='+$('#Price').html(), function(c) {
+                                    $('.btn').attr('disabled', false);
+                                    $('button').attr('disabled', false);
+                                    createAlertDialog('สำเร็จ', 'ทำรายการเรียบร้อยแล้ว '+ $('#Price').html()+' บาท');
+                                    ClearAll();
+                                });
+                                return false;
+                            }
+
+                            if (str.status == 'failed') {
+                                    $('.btn').attr('disabled', false);
+                                    $('button').attr('disabled', false);
+                                    ClearAll()
+                                    createAlertDialog(str.status,str.msg);
+                                    return false;
+                            }
+                            if (str == 'none') {
+                                    $('.btn').attr('disabled', false);
+                                    $('button').attr('disabled', false);
+                                    ClearAll()
+                                    createAlertDialog('Error','เกิดข้อผิดพลาด');
+                                    return false;
+                            }
+
+                            AUTOCHECK = setTimeout(() => {checkRef(key) }, 5000);
+                        });
+                } 
+
+                //var AUTOCHECK = setInterval(() => {}, 5000);
+
+                function showModal() {
+                    var modal = document.querySelector('ons-modal');
+                    modal.show();
+                    $('.btn').attr('disabled',
+                        true);
+                    $('button').attr('disabled',
+                        true);
+                    Win();
+
+                    setTimeout(function() {
+                        modal.hide();
+                        Coud();
+                        createPayment($('#Price').html(), $.now(), 'username', 'detail')
+                    },
+                        2000);
+                }
+
+
+                function CONFIRMLOGIN() {
+                    var NumberBo = parseInt($('#phone').val());
+                    if (NumberBo.length < 1 || NumberBo == '') {
+                        SoundError();
+                        phone = '';
+                        number = '';
+                        return false
+                    }
+                    showModal()
+                }
+
+                function ClearAll() {
+                    Click();
+                    $('#phone').val('');
+                    $('#Price').html($('#phone').val());
+                    $('#payment_qr').attr('src', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbF0JgqiEWN6wFHxWQCrIfllBR_qsNVq-1Cg&usqp=CAU');
+                }
+
+                function OnSuccess() {
+                    Win();
+                    $('#phone').val('');
+                    $('#Price').html($('#phone').val());
+                    $('#payment_qr').attr('src', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbF0JgqiEWN6wFHxWQCrIfllBR_qsNVq-1Cg&usqp=CAU');
+                }
+
+                function CLEARNO() {
+                    var phonex = $('#phone').val();
+                    if (phonex.length == 0) {
+                        return false;
+                    }
+                    SoundError();
+                    var length = parseInt(phonex.length)-1;
+                    var nom = phonex.substr(0, length);
+                    $('#phone').val('');
+                    $('#Price').html($('#phone').val())
+                    $.getJSON('/lcd?number=0');
+
+                }
+
+
+                function CHGPHONE(number) {
+                    var phone = $('#phone').val();
+$('#showPrice').show();
+                    if (phone.length < 1 && number == '0') {
+                        SoundError();
+                        phone = '';
+                        number = '';
+                        return false
+                    }
+
+                    if (phone.length == 10) {
+                        return false;
+                    }
+                    $.getJSON('/lcd?number='+phone+number )
+                    Sure();
+                    $('#phone').val(phone+number);
+                    $('#Price').html($('#phone').val());
+$('#showPrice').html($('#Price').html());
+                }
+            </script>
+        </ons-page>
+    </template>
+
+    <ons-modal direction="up">
+        <div style="text-align: center">
+            <div id="onsmodal">
+                <ons-icon icon="md-spinner" size="28px" spin></ons-icon> Loading...
+            </div>
+        </div>
+    </ons-modal>
+
+    <script>
+        window.fn = {};
+        window.fn.open = function() {
+            var menu = document.getElementById('menu');
+            menu.open();
+        };
+
+        window.fn.load = function(page) {
+            var content = document.getElementById('content');
+            var menu = document.getElementById('menu');
+            content.load(page).then(menu.close.bind(menu));
+        };
+
+        function changeType(id, type) {
+            $('#'+id).attr('type',
+                type);
+        }
+
+        var showAlert = function(msg) {
+            SoundAlert();
+            ons.notification.alert(msg);
+        };
+
+        var showConfirm = function() {
+            ons.notification.confirm('Confirm!')
+        };
+
+        var showPrompt = function() {
+            ons.notification.prompt('Prompt!')
+            .then(function(input) {
+                var message = input ? 'Entered: ' + input: 'Entered nothing!';
+                ons.notification.alert(message);
+            });
+        };
+
+        var showToast = function() {
+            ons.notification.toast('Toast!',
+                {
+                    timeout: 2000
+                });
+        };
+
+        function login() {
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+            if (username === 'admin' && password === '1234') {
+                ons.notification.alert('เข้าสู่ระบบ!');
+                fn.load('home.html');
+            } else {
+                ons.notification.alert('Incorrect username or password.');
+            }
+        };
+
+        function MyLoading(next) {
+            var modal = document.querySelector('ons-modal');
+            modal.show();
+            setTimeout(function() {
+                modal.hide();
+                fn.load(next)
+            }, 1000);
+        }
+
+        function createAlertDialog(title, text) {
+            var dialog = document.getElementById('my-alert-dialog');
+            SoundAlert();
+            if (dialog) {
+                $('#alert_title').html(title);
+                $('#alert_text').html(text);
+                dialog.show();
+            } else {
+                ons.createElement('alert-dialog.html', {
+                    append: true
+                })
+                .then(function(dialog) {
+                    $('#alert_title').html(title);
+                    $('#alert_text').html(text);
+                    dialog.show();
+                });
+            }
+        };
+
+        function hideAlertDialog() {
+            document.getElementById('my-alert-dialog').hide();
+        };
+
+        function notify(msg) {
+            SoundAlert();
+            ons.notification.alert(msg);
+        };
+
+        function showTemplateDialog(msg) {
+            var dialog = document.getElementById('my-dialog');
+            if (dialog) {
+                dialog.show();
+                $('#dialog_msg').html(msg);
+            } else {
+                ons.createElement('dialog.html', {
+                    append: true
+                })
+                .then(function(dialog) {
+                    dialog.show();
+                    $('#dialog_msg').html(msg);
+                });
+            }
+        };
+        function hideDialog(id) {
+            document.getElementById(id).hide();
+        };
+
+    </script>
+    <audio id="sound_click" src="//huay-plus.com/sound/click.wav" autostart="false">
+    </audio>
+    <audio id="sound_sure" src="https://app-wash.all123th.com/sound/DFTM.mp3" autostart="false">
+        <source src="https://app-wash.all123th.com/sound/DFTM.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sound_sweep" src="https://app-wash.all123th.com/sound/TRANSITION_SWEEP.mp3" autostart="false">
+        <source src="https://app-wash.all123th.com/sound/TRANSITION_SWEEP.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sound_Error" src="https://app-wash.all123th.com/sound/Error.mp3" autostart="false">
+        <source src="https://app-wash.all123th.com/sound/Error.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sound_win" src="https://app-wash.all123th.com/sound/WIN.mp3" autostart="false">
+        <source src="https://app-wash.all123th.com/sound/WIN.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="intro_ccoud" src="https://app-wash.all123th.com/sound/intro_ccoud.mp3" autostart="false">
+        <source src="https://app-wash.all123th.com/sound/intro_ccoud.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        var sound_click = document.getElementById("sound_click");
+        var sound_sure = document.getElementById("sound_sure");
+        var sound_sweep = document.getElementById("sound_sweep");
+        var sound_Error = document.getElementById("sound_Error");
+        var sound_win = document.getElementById("sound_win");
+        var intro_ccoud = document.getElementById("intro_ccoud");
+
+        function Click() {
+            sound_click.currentTime = 0;
+            sound_click.play();
+        }
+
+        function Sweep() {
+            sound_sweep.currentTime = 0.3;
+            sound_sweep.play();
+        }
+
+        function Sure() {
+            sound_sure.currentTime = 0;
+            sound_sure.play();
+        }
+
+        function Win() {
+            sound_win.currentTime = 0;
+            sound_win.play();
+        }
+
+        function SoundAlert() {
+            sound_win.currentTime = 0.6;
+            sound_win.play();
+        }
+
+        function SoundError() {
+            sound_Error.currentTime = 0;
+            sound_Error.play();
+        }
+
+        function Coud() {
+            intro_ccoud.currentTime = 0;
+            intro_ccoud.play();
+        }
+    </script>
+</body>
+</html>
