@@ -168,7 +168,7 @@
                                         แสกนเพื่อชำระเงิน
                                     </div>
                                     <div>
-                                        <div style="
+<div style="
     font-size: 80px;
     border: 5px solid #333;
     border-radius: 10px;
@@ -348,6 +348,7 @@ $('#showPrice').show();
 
                 function ClearAll() {
                     Click();
+$('#showPrice').hide();
                     $('#phone').val('');
                     $('#Price').html($('#phone').val());
                     $('#payment_qr').attr('src', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbF0JgqiEWN6wFHxWQCrIfllBR_qsNVq-1Cg&usqp=CAU');
@@ -361,6 +362,7 @@ $('#showPrice').show();
                 }
 
                 function CLEARNO() {
+$('#showPrice').hide();
                     var phonex = $('#phone').val();
                     if (phonex.length == 0) {
                         return false;
@@ -374,10 +376,11 @@ $('#showPrice').show();
 
                 }
 
+$('#showPrice').hide();
 
                 function CHGPHONE(number) {
+                    $('#showPrice').show();
                     var phone = $('#phone').val();
-$('#showPrice').show();
                     if (phone.length < 1 && number == '0') {
                         SoundError();
                         phone = '';
