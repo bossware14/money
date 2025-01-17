@@ -34,13 +34,6 @@ app.logger.critical("secret: %s" % secret)
 #logging.basicConfig(level=logging.INFO)
 
 CORS(app)
-if os.path.isfile('cert.pem'):
-    print('ok ssl')
-else:
-    os.system('pip install pyopenssl')
-    print('create ssl')
-    create_ssl = os.system('openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365 -subj "/C=TH/ST=Thailand/L=Bangkok/O=All123TH/CN=app-wash.all123th.com"')
-    print(create_ssl)
 
 def GetSerial():
     returned_output = uuid.getnode()#subprocess.call("cat /sys/firmware/devicetree/base/serial-number",shell=True)
@@ -78,12 +71,6 @@ def start_app():
     subprocess.Popen(['chromium-browser','--start-fullscreen','--kiosk',url]) 
     return jsonify(msg),200
 
-
-@app.route('/favicon.ico')
-def favicon():
-    filename = 'favicon.ico'
-    return send_file(filename, mimetype='image/png')
-    #return render_template('images.png')
 
 @app.route('/ngrok')
 def NGrok():
@@ -450,7 +437,7 @@ def LCD_NUMBER(scrap1):
         else:
           display.Show1(3, int(scrap1))
 
-GPIO.setwarnings(False)
+#GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 #update
 #sudo apt remove python3-rpi.gpio
@@ -515,7 +502,7 @@ def UpdateOnline(app,data):
     url = str("https://app-wash.all123th.com/api/")+str(app)
     requests.put(url, data=json.dumps(data), headers=headers)
     url = "http://localhost:"+str(API_PORT)
-    subprocess.Popen(['chromium-browser','--start-fullscreen','--kiosk',url]) 
+    #subprocess.Popen(['chromium-browser','--start-fullscreen','--kiosk',url]) 
 
 @app.route('/sendcoin',methods=['GET'])
 def send_coint():
@@ -554,5 +541,3 @@ if __name__ == '__main__':
     
     UpdateOnline(json_data['serial-number'],json_data)
     app.run(host='0.0.0.0', port=API_PORT, debug=DEBUG_MODE)
-    #socketio.run(app,host="0.0.0.0",port=API_PORT, debug=DEBUG_MODE)
-    os.system("pkill chromium")
