@@ -167,13 +167,13 @@
                                     <div>
                                         แสกนเพื่อชำระเงิน
                                     </div>
-                                    <div>
 <div style="
-    font-size: 80px;
+    font-size: 72px;
     border: 5px solid #333;
     border-radius: 10px;
     margin: 30px;
     padding: 5px;"  id="showPrice"></div>
+                                    <div>
                                     <img id="payment_qr" class="border rounded" style="width:235px;max-height:235px;" width="100%"
                                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbF0JgqiEWN6wFHxWQCrIfllBR_qsNVq-1Cg&usqp=CAU">
                                     </div>
@@ -262,6 +262,7 @@ var RunCheck = 0;
                             function(str) {
 RunCheck = 0;
 $('#showPrice').hide();
+$('#payment_qr').show();
                                 console.log(str)
                                 keyref = str.key;
                                 checkRef(str.key)
@@ -287,6 +288,7 @@ RunCheck++;
                             if (str.status == 'success') {
                                 //clearInterval(AUTOCHECK);
 $('#showPrice').show();
+$('#payment_qr').hide();
                                 $.getJSON('/sendcoin?count='+$('#Price').html(), function(c) {
                                     $('.btn').attr('disabled', false);
                                     $('button').attr('disabled', false);
@@ -349,6 +351,7 @@ $('#showPrice').show();
                 function ClearAll() {
                     Click();
 $('#showPrice').hide();
+$('#payment_qr').show();
                     $('#phone').val('');
                     $('#Price').html($('#phone').val());
                     $('#payment_qr').attr('src', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbF0JgqiEWN6wFHxWQCrIfllBR_qsNVq-1Cg&usqp=CAU');
@@ -363,6 +366,7 @@ $('#showPrice').hide();
 
                 function CLEARNO() {
 $('#showPrice').hide();
+$('#payment_qr').show();
                     var phonex = $('#phone').val();
                     if (phonex.length == 0) {
                         return false;
@@ -377,9 +381,10 @@ $('#showPrice').hide();
                 }
 
 $('#showPrice').hide();
-
+$('#payment_qr').show();
                 function CHGPHONE(number) {
                     $('#showPrice').show();
+$('#payment_qr').hide();
                     var phone = $('#phone').val();
                     if (phone.length < 1 && number == '0') {
                         SoundError();
