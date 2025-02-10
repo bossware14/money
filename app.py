@@ -12,7 +12,6 @@ import socket
 import uuid
 from gpiozero import MotionSensor , AngularServo , LED ,Servo
 from signal import pause
-import logging, ngrok
 import RPi.GPIO as GPIO
 import threading
 import math
@@ -25,13 +24,10 @@ API_PORT = 5000
 
 deviceId = str(uuid.getnode())
 secret = os.urandom(24).hex()
-DEBUG_MODE = False# โหมด ทดลอง  True|False
+DEBUG_MODE = False
 app = Flask(__name__,template_folder="")
-app.logger.info("Starting...")
+#app.logger.info("Starting...")
 app.config['SECRET_KEY'] = secret
-app.logger.critical("secret: %s" % secret)
-#socketio = SocketIO(app,cors_allowed_origins="*")
-#logging.basicConfig(level=logging.INFO)
 
 CORS(app)
 
@@ -43,6 +39,13 @@ def GetSerial():
 @app.route('/')
 def index():
     return render_template('money.html')
+
+@app.route('/favicon.ico')
+def favicon():
+    msg = {}
+    msg['status'] = "success"
+    msg['msg'] = "close"
+    return jsonify(msg),200
 
 @app.route('/close')
 def close_app():
@@ -71,10 +74,6 @@ def start_app():
     subprocess.Popen(['chromium-browser','--start-fullscreen','--kiosk',url]) 
     return jsonify(msg),200
 
-
-@app.route('/ngrok')
-def NGrok():
-      subprocess.call("ngrok http http://localhost:"+str(API_PORT),shell=True)
 
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -444,58 +443,87 @@ GPIO.setmode(GPIO.BCM)
 #pip3 install rpi-lgpio
 gpio_sensor = 5  # เซนเซอร์นับเหรียญ
 gpio_relay = 17
-#ขา 17 relay
-LCDOFF()
-#update
-#sudo apt remove python3-rpi.gpio
-#pip3 install rpi-lgpio
-#ขา 17 relay
-#
-#print('จำนวนเหรียญ')
-#maxcoint = input() #MAX
+
 def sendcoin_ok(maxcoint):
+ global counter,MONEY
  try:
   LCD_NUMBER(maxcoint)
   time.sleep(1)
   print('เริ่ม')
   LCD_NUMBER(0)
-  inout = 'in'#input()
-  if inout == 'in':
-      GPIO.setup(int(gpio_relay),GPIO.OUT)
-      GPIO.setup(int(gpio_sensor),GPIO.IN)
-  if inout == 'out':
-      GPIO.setup(int(gpio_sensor),GPIO.OUT)
+  GPIO.setup(int(gpio_relay),GPIO.OUT)
+  GPIO.setup(int(gpio_sensor),GPIO.IN)
   isok = 1
   isSum = 0
   oldSum = 0
   while True:
       lf1 = int(GPIO.input(int(gpio_sensor)))
-      time.sleep(0.03) #ตั่งเวลานับเหรียญ
-      if lf1 == 1 and isok == 0:
+      if lf1 == 1 and isok == 2:
         isSum = isSum +1;
+        time.sleep(0.03)
         print("coin : ",isSum)
-        LCD_NUMBER(isSum)
         isok=1
         if isSum == int(maxcoint) :
            GPIO.setup(int(gpio_relay),GPIO.IN)
            break
-      else:
-        isok=0
-        oldSum = isSum 
+        
 
+      if lf1 == 0 and isok == 1:
+        isok=2
+        time.sleep(0.1)
+
+      #else:
+       # isok=0
+        #oldSum = isSum 
  finally:
      isok = 1
      isSum = 0
      oldSum = 0
+     MONEY =0
+     counter = 0
      print("สิ้นสุด")
-     #time.sleep(10)
-     #LCDOFF()
 
 def destroy():
     print("--------") 
     GPIO.cleanup()
 
+GPIO.setup(17,GPIO.IN)
 
+GPIO.setup(12,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
+counter = 0
+time_start = round(time.time(),1)
+time_end = round(time.time(),1)
+status_gpi = 0
+MONEY = 0
+LCDOFF()
+ON_0 = 0
+ON_1 = 0
+
+def sensor_callback(channel):
+    global counter,MONEY,status_gpi,time_start,time_end,ON_0,ON_1
+    checkGPOI = GPIO.input(channel)
+    time_start = round(time.time(),1)
+    #checktime = round(time_end-time_start,1)
+    if checkGPOI == 1 :
+       time_start = round(time.time(),1)
+       status_gpi = checkGPOI
+       MONEY =0
+       counter =0
+    if checkGPOI == 0 :
+       time_end = round(time.time(),1)
+       status_gpi = checkGPOI
+       checktime = round(time_end-time_start,1)
+
+    if checkGPOI == 0 and status_gpi == 0 and checktime == 0:
+       #print(checkGPOI,checktime,status_gpi)
+       MONEY = MONEY +10
+       counter = counter +1
+       status_gpi = 1
+    if MONEY >= 20 :
+       print(MONEY)
+       sendcoin_ok(counter)
+
+GPIO.add_event_detect(12,GPIO.FALLING,callback=sensor_callback)
 
 def UpdateOnline(app,data):
     headers = {"Content-Type": "application/json"}
@@ -506,10 +534,13 @@ def UpdateOnline(app,data):
 
 @app.route('/sendcoin',methods=['GET'])
 def send_coint():
+    global counter
     count = request.args.get('count')
     if not count:
         LCDOFF()
+        counter = 0
         return jsonify({"status": "error"}), 200
+    counter = count
     sendcoin_ok(count)
     msg = {}
     msg['status'] = "success"
@@ -520,7 +551,6 @@ def send_coint():
 def lcd_view():
     count = request.args.get('number')
     if not count:
-
         return jsonify({"status": "error"}), 200
     LCD_NUMBER(count)
     msg = {}
@@ -529,15 +559,4 @@ def lcd_view():
     return jsonify(msg),200
 
 if __name__ == '__main__':
-    try :
-      token = '2q6m1Gd0w8fEuibiwyToH0JEyfx_2ft99jvARhHn2u8Q2EPe1'
-      ngrok.set_auth_token(token)
-      listener = ngrok.forward("http://"+str(json_data['ip'])+":"+str(API_PORT))
-      print(f"IP: "+str(listener.url()))
-      json_data["url"] = str(listener.url())
-    except:
-      json_data["url"] = "offline"
-      print(f"IP: None")
-    
-    UpdateOnline(json_data['serial-number'],json_data)
     app.run(host='0.0.0.0', port=API_PORT, debug=DEBUG_MODE)
