@@ -16,6 +16,8 @@ import RPi.GPIO as GPIO
 import threading
 import math
 from time import sleep, localtime
+from threading import Timer
+import asyncio 
 
 # port
 API_PORT = 5000
@@ -443,53 +445,6 @@ GPIO.setmode(GPIO.BCM)
 #pip3 install rpi-lgpio
 gpio_sensor = 5  # เซนเซอร์นับเหรียญ
 gpio_relay = 17
-
-def sendcoin_ok(maxcoint):
- global counter,MONEY
- try:
-  LCD_NUMBER(maxcoint)
-  time.sleep(1)
-  print('เริ่ม')
-  LCD_NUMBER(0)
-  GPIO.setup(int(gpio_relay),GPIO.OUT)
-  GPIO.setup(int(gpio_sensor),GPIO.IN)
-  isok = 1
-  isSum = 0
-  oldSum = 0
-  while True:
-      lf1 = int(GPIO.input(int(gpio_sensor)))
-      if lf1 == 1 and isok == 2:
-        isSum = isSum +1;
-        time.sleep(0.03)
-        print("coin : ",isSum)
-        isok=1
-        if isSum == int(maxcoint) :
-           GPIO.setup(int(gpio_relay),GPIO.IN)
-           break
-        
-
-      if lf1 == 0 and isok == 1:
-        isok=2
-        time.sleep(0.1)
-
-      #else:
-       # isok=0
-        #oldSum = isSum 
- finally:
-     isok = 1
-     isSum = 0
-     oldSum = 0
-     MONEY =0
-     counter = 0
-     print("สิ้นสุด")
-
-def destroy():
-    print("--------") 
-    GPIO.cleanup()
-
-GPIO.setup(17,GPIO.IN)
-
-GPIO.setup(12,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
 counter = 0
 time_start = round(time.time(),1)
 time_end = round(time.time(),1)
@@ -498,33 +453,76 @@ MONEY = 0
 LCDOFF()
 ON_0 = 0
 ON_1 = 0
+r = 0
+isSum = 0
+myLcd = 0
+GPIO.setup(17,GPIO.IN)
+GPIO.setup(12,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
+
+
+def sendcoin_ok(maxcoint):
+ global counter,MONEY,isSum,myLcd
+ try:
+  GPIO.setup(int(gpio_relay),GPIO.OUT)
+  GPIO.setup(int(gpio_sensor),GPIO.IN)
+  isok = 1
+  isSum = 0
+  oldSum = 0
+  while True:
+      lf1 = int(GPIO.input(int(gpio_sensor)))
+      if lf1 == 1 and isok == 2:
+        time.sleep(0.03)
+        myLcd = myLcd + 10
+        #LCD_NUMBER(myLcd)
+        isSum = isSum +1;
+        #print("send : ",isSum)
+        MONEY = MONEY -10
+        counter = counter -1
+        isok=1
+        #print("Money : ",MONEY,counter)
+        if MONEY <= 0 :
+          GPIO.setup(int(gpio_relay),GPIO.IN)
+          break
+
+      if lf1 == 0 and isok == 1:
+        isok=2
+        time.sleep(0.1)
+ finally:
+     isok = 1
+     isSum = 0
+     oldSum = 0
+     #myLcd = 0
+     #LCD_NUMBER(MONEY)
+     print("send",1)
+
+def destroy():
+    print("--------") 
+    GPIO.cleanup()
+
 
 def sensor_callback(channel):
     global counter,MONEY,status_gpi,time_start,time_end,ON_0,ON_1
     checkGPOI = GPIO.input(channel)
     time_start = round(time.time(),1)
-    #checktime = round(time_end-time_start,1)
     if checkGPOI == 1 :
        time_start = round(time.time(),1)
-       status_gpi = checkGPOI
-       MONEY =0
-       counter =0
+       status_gpi = 1
+       #MONEY =0
+       #counter =0
+
     if checkGPOI == 0 :
        time_end = round(time.time(),1)
-       status_gpi = checkGPOI
+       status_gpi = 0
        checktime = round(time_end-time_start,1)
 
     if checkGPOI == 0 and status_gpi == 0 and checktime == 0:
-       #print(checkGPOI,checktime,status_gpi)
        MONEY = MONEY +10
        counter = counter +1
-       status_gpi = 1
-    if MONEY >= 20 :
-       print(MONEY)
        sendcoin_ok(counter)
 
 GPIO.add_event_detect(12,GPIO.FALLING,callback=sensor_callback)
 
+LCD_NUMBER(MONEY)
 def UpdateOnline(app,data):
     headers = {"Content-Type": "application/json"}
     url = str("https://app-wash.all123th.com/api/")+str(app)
@@ -534,14 +532,18 @@ def UpdateOnline(app,data):
 
 @app.route('/sendcoin',methods=['GET'])
 def send_coint():
-    global counter
-    count = request.args.get('count')
+    global counter,MONEY
+    count = int(request.args.get('count'))
     if not count:
         LCDOFF()
         counter = 0
         return jsonify({"status": "error"}), 200
-    counter = count
-    sendcoin_ok(count)
+    if count <= 9 :
+        return jsonify({"status": "error"}), 200
+
+    counter = count/10
+    MONEY = count
+    sendcoin_ok(counter)
     msg = {}
     msg['status'] = "success"
     msg['msg'] = "ok"
@@ -559,4 +561,7 @@ def lcd_view():
     return jsonify(msg),200
 
 if __name__ == '__main__':
+    url = "http://localhost:"+str(API_PORT)
+    subprocess.Popen(['chromium-browser','--start-fullscreen','--kiosk',url]) 
     app.run(host='0.0.0.0', port=API_PORT, debug=DEBUG_MODE)
+    LCDOFF()
