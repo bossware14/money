@@ -107,18 +107,9 @@
 
 <body>
     <ons-splitter>
-        <ons-splitter-side id="menu" side="left" width="220px" collapse swipeable>
-            <ons-page>
-                <ons-list>
-                    <ons-list-item onclick="fn.load('tab3.html')" tappable>
-                        ชำระเงิน
-                    </ons-list-item>
-                </ons-list>
-            </ons-page>
-        </ons-splitter-side>
         <ons-splitter-content id="content" page="tab3.html"></ons-splitter-content>
     </ons-splitter>
-
+ 
 
     <template id="alert-dialog.html">
         <ons-alert-dialog id="my-alert-dialog" modifier="rowfooter">
@@ -142,7 +133,7 @@
                     This is a simple dialog!
                 </p>
                 <p>
-                    <ons-button onclick="hideDialog('my-dialog')">Close</ons-button>
+                    <button onclick="hideDialog('my-dialog')">Close</button>
                 </p>
             </div>
         </ons-dialog>
@@ -151,30 +142,29 @@
     <template id="tab3.html">
         <ons-page id="Tab3">
             <ons-card>
-                <ons-row class="center text-center p-0 m-0">
-                    จำนวนเงิน
-                    <div id="Price" style="height:45px;font-size:32px;text-align:center;padding:0px;margin:0 auto;" class="p-0 m-0 w-100 rounded border center text-center bg-dark text-light">
-                        0
-                    </div>
-                </ons-row>
-            </ons-card>
-            <ons-card>
+                <div id="Price" style="display:none;height:45px;font-size:32px;text-align:center;padding:0px;margin:0 auto;" class="p-0 m-0 w-100 rounded border center text-center bg-dark text-light">
+                    0
+                </div>
+
                 <ons-row>
                     <ons-col class="me-2">
                         <div id="card-member m-2">
                             <div class="row">
                                 <div class="col-12 text-center">
-                                    <div>
-                                        แสกนเพื่อชำระเงิน
+                                    <div style="
+                                        font-size: 80px;
+                                        border: 2px solid #555;
+                                        border-radius: 10px;
+                                        margin: auto;
+font-weight: 900;
+text-align: center;
+min-height:250px !important;
+max-width:250px !important;
+                                        padding-top:60px;" id="showPrice">
+                                        
                                     </div>
-<div style="
-    font-size: 72px;
-    border: 5px solid #333;
-    border-radius: 10px;
-    margin: 30px;
-    padding: 5px;"  id="showPrice"></div>
                                     <div>
-                                    <img id="payment_qr" class="border rounded" style="width:235px;max-height:235px;" width="100%"
+                                        <img id="payment_qr" class="border rounded" style="width:235px;max-height:235px;" width="100%"
                                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbF0JgqiEWN6wFHxWQCrIfllBR_qsNVq-1Cg&usqp=CAU">
                                     </div>
                                 </div>
@@ -186,65 +176,65 @@
                     </ons-col>
                     <ons-col>
                         <div class="text-center w-100">
-                            ระบุจำนวนเงิน
+                            
                         </div>
                         <ul class="d-none pt-2 m-2 list">
                             <li class="list-item">
                                 <div class="list-item__center">
-                                    <input type="tel" maxlength="10" id="phone" style="font-size:20px;font-weight:900;" class="text-center text-input w-100" placeholder="จำนวนเงิน">
+                                    <input type="tel" maxlength="10" id="phone" style="font-size:30px;height:80px !important;font-weight: 900;;font-weight:900;" class="text-center text-input w-100" placeholder="จำนวนเงิน">
                                 </div>
                             </li>
                         </ul>
                         <div id="padtab">
                             <ons-row>
                                 <ons-col class="p-1">
-                                    <ons-button onclick="CHGPHONE(1)" style="font-size:20px" class="w-100 btn btn-dark">1</ons-button>
+                                    <button onclick="CHGPHONE(10)" style="font-size:30px;height:80px !important;font-weight: 900;" class="w-100 btn btn-primary">10</button>
+                                </ons-col> 
+                                <ons-col class="p-1">
+                                    <button onclick="CHGPHONE(20)" style="font-size:30px;height:80px !important;font-weight: 900;" class="w-100 btn btn-primary">20</button>
                                 </ons-col>
                                 <ons-col class="p-1">
-                                    <ons-button onclick="CHGPHONE(2)" style="font-size:20px" class="w-100 btn btn-dark">2</ons-button>
-                                </ons-col>
-                                <ons-col class="p-1">
-                                    <ons-button onclick="CHGPHONE(3)" style="font-size:20px" class="w-100 btn btn-dark">3</ons-button>
+                                    <button onclick="CHGPHONE(30)" style="font-size:30px;height:80px !important;font-weight: 900;" class="w-100 btn btn-primary">30</button>
                                 </ons-col>
                             </ons-row>
                             <ons-row>
                                 <ons-col class="p-1">
-                                    <ons-button onclick="CHGPHONE(4)" style="font-size:20px" class="w-100 btn btn-dark">4</ons-button>
+                                    <button onclick="CHGPHONE(40)" style="font-size:30px;height:80px !important;font-weight: 900;" class="w-100 btn btn-primary">40</button>
                                 </ons-col>
                                 <ons-col class="p-1">
-                                    <ons-button onclick="CHGPHONE(5)" style="font-size:20px" class="w-100 btn btn-dark">5</ons-button>
+                                    <button onclick="CHGPHONE(50)" style="font-size:30px;height:80px !important;font-weight: 900;" class="w-100 btn btn-primary">50</button>
                                 </ons-col>
                                 <ons-col class="p-1">
-                                    <ons-button onclick="CHGPHONE(6)" style="font-size:20px" class="w-100 btn btn-dark">6</ons-button>
+                                    <button onclick="CHGPHONE(60)" style="font-size:30px;height:80px !important;font-weight: 900;" class="w-100 btn btn-primary">60</button>
                                 </ons-col>
                             </ons-row>
 
                             <ons-row>
                                 <ons-col class="p-1">
-                                    <ons-button onclick="CHGPHONE(7)" style="font-size:20px" class="w-100 btn btn-dark">7</ons-button>
+                                    <button onclick="CHGPHONE(70)" style="font-size:30px;height:80px !important;font-weight: 900;" class="w-100 btn btn-primary">70</button>
                                 </ons-col>
                                 <ons-col class="p-1">
-                                    <ons-button onclick="CHGPHONE(8)" style="font-size:20px" class="w-100 btn btn-dark">8</ons-button>
+                                    <button onclick="CHGPHONE(80)" style="font-size:30px;height:80px !important;font-weight: 900;" class="w-100 btn btn-primary">80</button>
                                 </ons-col>
                                 <ons-col class="p-1">
-                                    <ons-button onclick="CHGPHONE(9)" style="font-size:20px" class="w-100 btn btn-dark">9</ons-button>
+                                    <button onclick="CHGPHONE(90)" style="font-size:30px;height:80px !important;font-weight: 900;" class="w-100 btn btn-primary">90</button>
                                 </ons-col>
                             </ons-row>
                             <ons-row>
                                 <ons-col class="p-1">
-                                    <ons-button onclick="CLEARNO()" style="font-size:20px" class="w-100 btn btn-danger">-</ons-button>
+                                    <button onclick="CLEARNO()" style="font-size:30px;height:80px !important;font-weight: 900;" class="w-100 btn btn-danger">-</button>
                                 </ons-col>
                                 <ons-col class="p-1">
-                                    <ons-button onclick="CHGPHONE(0)" style="font-size:20px" class="w-100 btn btn-dark">0</ons-button>
+                                    <button onclick="CHGPHONE(100)" style="font-size:30px;height:80px !important;font-weight: 900;" class="w-100 btn btn-primary">100</button>
                                 </ons-col>
                                 <ons-col class="p-1">
-                                    <ons-button disabled onclick="ClearAll()" style="font-size:20px" class="w-100 btn">*</ons-button>
+                                    <button disabled onclick="ClearAll()" style="font-size:30px;height:80px !important;font-weight: 900;" class="w-100 btn">*</button>
                                 </ons-col>
                             </ons-row>
                             <ons-row>
 
-                                <ons-col class="p-1 mt-5">
-                                    <ons-button onclick="CONFIRMLOGIN()" style="font-size:18px" class="w-100 btn btn-primary">ยืนยัน</ons-button>
+                                <ons-col class="p-1">
+                                    <button onclick="CONFIRMLOGIN()" style="font-size:30px;height:80px !important;font-weight: 900;" class="w-100 btn btn-warning">ยืนยัน</button>
                                 </ons-col>
                             </ons-row>
                         </div>
@@ -254,15 +244,15 @@
             <script>
 
                 var keyref = ''
-var RunCheck = 0;
+                var RunCheck = 0;
 
                 function createPayment(amount, ref, username, detail) {
                     $.getJSON('https://app-wash.all123th.com/api/config', function(json) {
                         $.getJSON('https://api.d-kub.com/createPayment?authoken='+json.device+'&amount='+amount+'&ref='+ref+'&username='+username+'&detail='+detail,
                             function(str) {
-RunCheck = 0;
-$('#showPrice').hide();
-$('#payment_qr').show();
+                                RunCheck = 0;
+                                $('#showPrice').hide();
+                                $('#payment_qr').show();
                                 console.log(str)
                                 keyref = str.key;
                                 checkRef(str.key)
@@ -275,23 +265,23 @@ $('#payment_qr').show();
                     $.getJSON('https://api.d-kub.com/swift?key='+key+'&type=json',
                         function(str) {
                             console.log(str)
-if(RunCheck >= 5){
-$('.btn').attr('disabled', false);
-$('button').attr('disabled', false);
-createAlertDialog('หมดเวลา', 'กรุณาทำรายการใหม่');
-ClearAll();
-$.getJSON('/lcd?number=0');
-return false;
-}
+                            if (RunCheck >= 5) {
+                                $('.btn').prop('disabled', false);
+                                $('button').prop('disabled', false);
+                                createAlertDialog('หมดเวลา', 'กรุณาทำรายการใหม่');
+                                ClearAll();
+                                $.getJSON('/lcd?number=0');
+                                return false;
+                            }
 
-RunCheck++;
+                            RunCheck++;
                             if (str.status == 'success') {
                                 //clearInterval(AUTOCHECK);
-$('#showPrice').show();
-$('#payment_qr').hide();
+                                $('#showPrice').show();
+                                $('#payment_qr').hide();
                                 $.getJSON('/sendcoin?count='+$('#Price').html(), function(c) {
-                                    $('.btn').attr('disabled', false);
-                                    $('button').attr('disabled', false);
+                                    $('.btn').prop('disabled', false);
+                                    $('button').prop('disabled', false);
                                     createAlertDialog('สำเร็จ', 'ทำรายการเรียบร้อยแล้ว '+ $('#Price').html()+' บาท');
                                     ClearAll();
                                 });
@@ -299,35 +289,34 @@ $('#payment_qr').hide();
                             }
 
                             if (str.status == 'failed') {
-                                    $('.btn').attr('disabled', false);
-                                    $('button').attr('disabled', false);
-                                    ClearAll()
-                                    createAlertDialog(str.status,str.msg);
-                                    return false;
+                                $('.btn').prop('disabled', false);
+                                $('button').prop('disabled', false);
+                                ClearAll()
+                                createAlertDialog(str.status, str.msg);
+                                return false;
                             }
                             if (str == 'none') {
-                                    $('.btn').attr('disabled', false);
-                                    $('button').attr('disabled', false);
-                                    ClearAll()
-                                    createAlertDialog('Error','เกิดข้อผิดพลาด');
-                                    return false;
+                                $('.btn').prop('disabled', false);
+                                $('button').prop('disabled', false);
+                                ClearAll()
+                                createAlertDialog('Error', 'เกิดข้อผิดพลาด');
+                                return false;
                             }
 
-                            AUTOCHECK = setTimeout(() => {checkRef(key) }, 5000);
+                            AUTOCHECK = setTimeout(() => {
+                                checkRef(key)
+                            }, 5000);
                         });
-                } 
+                }
 
                 //var AUTOCHECK = setInterval(() => {}, 5000);
 
                 function showModal() {
                     var modal = document.querySelector('ons-modal');
                     modal.show();
-                    $('.btn').attr('disabled',
-                        true);
-                    $('button').attr('disabled',
-                        true);
+                    $('.btn').prop('disabled',true);
+                    $('button').prop('disabled',true);
                     Win();
-
                     setTimeout(function() {
                         modal.hide();
                         Coud();
@@ -350,8 +339,8 @@ $('#payment_qr').hide();
 
                 function ClearAll() {
                     Click();
-$('#showPrice').hide();
-$('#payment_qr').show();
+                    $('#showPrice').hide();
+                    $('#payment_qr').show();
                     $('#phone').val('');
                     $('#Price').html($('#phone').val());
                     $('#payment_qr').attr('src', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbF0JgqiEWN6wFHxWQCrIfllBR_qsNVq-1Cg&usqp=CAU');
@@ -365,8 +354,8 @@ $('#payment_qr').show();
                 }
 
                 function CLEARNO() {
-$('#showPrice').hide();
-$('#payment_qr').show();
+                    $('#showPrice').hide();
+                    $('#payment_qr').show();
                     var phonex = $('#phone').val();
                     if (phonex.length == 0) {
                         return false;
@@ -380,11 +369,11 @@ $('#payment_qr').show();
 
                 }
 
-$('#showPrice').hide();
-$('#payment_qr').show();
+                $('#showPrice').hide();
+                $('#payment_qr').show();
                 function CHGPHONE(number) {
                     $('#showPrice').show();
-$('#payment_qr').hide();
+                    $('#payment_qr').hide();
                     var phone = $('#phone').val();
                     if (phone.length < 1 && number == '0') {
                         SoundError();
@@ -396,11 +385,11 @@ $('#payment_qr').hide();
                     if (phone.length == 10) {
                         return false;
                     }
-                    $.getJSON('/lcd?number='+phone+number )
+                    $.getJSON('/lcd?number='+number)
                     Sure();
-                    $('#phone').val(phone+number);
+                    $('#phone').val(number);
                     $('#Price').html($('#phone').val());
-$('#showPrice').html($('#Price').html());
+                    $('#showPrice').html($('#Price').html());
                 }
             </script>
         </ons-page>
