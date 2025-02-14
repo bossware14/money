@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template,send_file 
-from flask_socketio import SocketIO, emit, send
+#from flask_socketio import SocketIO, emit, send
 from flask_cors import CORS, cross_origin
 import requests
 import gpiod
@@ -23,6 +23,11 @@ import asyncio
 API_PORT = 5000
 # เซ็นเซอร์  
 
+#time.sleep(10)
+
+# AUTO START
+#sudo nano /etc/rc.local
+#python3 ~/Desktop/money/app.py &
 
 deviceId = str(uuid.getnode())
 secret = os.urandom(24).hex()
@@ -91,112 +96,40 @@ def get_ip():
     return IP
 
 
-if os.path.isfile('data.json'):
-    with open('data.json', 'r') as f:
+if os.path.isfile('main.json'):
+    with open('main.json', 'r') as f:
       json_data = json.load(f)
 else:
     json_data = {
-  "data": {
-    "action": 0,
-    "modewash": "modewash1",
-    "monitor": "พร้อม",
-    "msg": "พร้อม",
-    "persen": "0",
-    "runtime": "00:00:00",
-    "sec": 0,
-    "start": 0,
-    "status": "STOP",
-    "temperature": "temperature1",
-    "time": "00:00:00",
-    "timeout": "00:00:00",
-    "update": "2024-12-01 00:00:00"
-  },
-  "date": "2024-12-20 00:00:00",
-  "id": "a2d08c2d74594940ae6e6d39e96451bb",
+  "id": "AUTO",
   "ip": "127.0.0.1",
-  "mode": {
-    "modewash1": 15,
-    "modewash2": 10,
-    "modewash3": 30,
-    "modewash4": 25
+  "payment":{
+      "createPayment":"",
+      "checkRef":"",
+      "device": "db46767m980se",
+      "walletId":"",
+      "type":"qrcode",
+      "status":"1"
   },
-  "msg": "พร้อมใช้งาน",
-  "price": {
-    "modewash1": 30,
-    "modewash2": 30,
-    "modewash3": 50,
-    "modewash4": 40,
-    "temperature1": 0,
-    "temperature2": 30,
-    "temperature3": 0
-  },
-  "status": "ONLINE"
+  "wallet": {
+    "in": 0,
+    "out": 0,
+    "coin": 0,
+    "MONEY": 0,
+    "payment": 'AUTO',
+    "Agent": 'AUTO',
+    "walletId": 'AUTO'
+  }
 }
 
 tz = timezone(timedelta(hours = 7))
 json_data['id'] = socket.gethostname()
-json_data['date'] = datetime.now(tz=tz).strftime('%Y-%m-%d %H:%M:%S')
-json_data['status'] = 'ONLINE'
-json_data['msg'] = 'พร้อมใช้งาน'
 json_data['ip'] = get_ip()
-json_data['port'] = API_PORT
-json_data['data']['time'] = datetime.now(tz=tz).strftime('%H:%M:%S')
-json_data['serial-number'] = GetSerial()
 
 def update_data(json_data):
     json_data['id'] = socket.gethostname()
-    json_data['date'] = datetime.now(tz=tz).strftime('%Y-%m-%d %H:%M:%S')
-    json_data['status'] = 'ONLINE'
-    json_data['msg'] = 'พร้อมใช้งาน'
     json_data['ip'] = get_ip()
-    json_data['data']['update'] = datetime.now(tz=tz).strftime('%Y-%m-%d %H:%M:%S')
-    json_data['data']['time'] = datetime.now(tz=tz).strftime('%H:%M:%S')
-    if json_data['data']['start'] ==  1 and json_data['data']['status'] == "START" :
-                json_data['data']['time'] = datetime.now(tz=tz).strftime('%H:%M:%S')
-                t1 = json_data['data']['timeout'].split(':')
-                t2 = json_data['data']['time'].split(':')
-                HOUR = int(t1[0]) - int(t2[0])
-                MIN = int(t1[1]) - int(t2[1])
-                SEC = int(t1[2]) - int(t2[2])
-                xper = HOUR-MIN-SEC
-                if xper <= 0 :
-                    json_data['data']['persen'] = 100
-                TOSEC = 0#int(json_data['data']['TIMSEC'])
-                if HOUR > 0:
-                    TOSEC = TOSEC + int(HOUR*60)
-                if MIN > 0:
-                    TOSEC = TOSEC + int(MIN*60)
-                if SEC >= 0:
-                    TOSEC = TOSEC + int(SEC)
-                else:
-                    TOSEC = TOSEC + int(SEC)
-                    json_data['data']['runtime'] = str(HOUR)+':'+str(MIN)+':'+str(SEC)
-                    json_data['data']['runtime'] = datetime.fromtimestamp(TOSEC).strftime('00:%M:%S')
-                if HOUR <= 0 and MIN <= 0 and SEC <= 0:
-                    json_data['data']['TIMSEC'] = 0
-                    json_data['data']['runtime'] = "00:00:00"
-                    json_data['data']['timeout'] = "00:00:00"
-                    json_data['data']['msg'] = "ว่าง"
-                    json_data['data']['monitor'] = "เสร็จแล้ว"
-                    json_data['msg'] = 'พร้อมใช้งาน'
-                    json_data['data']['minute'] = '00:00:00'
-                    json_data['data']['status'] = 'STOP'
-                    json_data['data']['start'] = 0
-                    json_data['data']['action'] = 0
-                    json_data['data']['persen'] = 100
-                else:
-                    json_data['data']['persen'] = 100-TOSEC*100/int(json_data['data']['sec'])
-                    json_data['data']['TIMSEC'] = TOSEC
-                    json_data['data']['msg'] = "กำลังทำงาน"
-                    json_data['data']['monitor'] = "เครื่องกำลังปั่นผ้า"
-                    json_data['data']['start'] = 1
-                    json_data['msg'] = 'กำลังซัก'
-                with open('data.json', 'w') as f:
-                    json.dump(json_data, f) 
-                return json_data
-    else:
-        json_data['data']['status'] = 'ONLINE'
-    with open('data.json', 'w') as f:
+    with open('main.json', 'w') as f:
         json.dump(json_data, f) 
     return json_data
 
@@ -440,9 +373,11 @@ def LCD_NUMBER(scrap1):
 
 #GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
+
 #update
 #sudo apt remove python3-rpi.gpio
 #pip3 install rpi-lgpio
+
 gpio_sensor = 5  # เซนเซอร์นับเหรียญ
 gpio_relay = 17
 counter = 0
@@ -450,7 +385,6 @@ time_start = round(time.time(),1)
 time_end = round(time.time(),1)
 status_gpi = 0
 MONEY = 0
-LCDOFF()
 ON_0 = 0
 ON_1 = 0
 r = 0
@@ -459,41 +393,54 @@ myLcd = 0
 GPIO.setup(17,GPIO.IN)
 GPIO.setup(12,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
 
+SS = 0
+def sensor_callback2(channel) :
+  global SS,counter,MONEY,isSum,myLcd,json_data 
+  checkGPOIs = GPIO.input(channel)
+  if checkGPOIs == 1 :
+    print("no",checkGPOIs)
+  if checkGPOIs == 0 and SS == 1:
+    print("ok",checkGPOIs)
+
+  SS = checkGPOIs
+
+
+GPIO.setup(int(gpio_sensor),GPIO.IN)
+GPIO.add_event_detect(int(gpio_sensor),GPIO.BOTH,callback=sensor_callback2)
 
 def sendcoin_ok(maxcoint):
- global counter,MONEY,isSum,myLcd
+ global counter,MONEY,isSum,myLcd,json_data
  try:
   GPIO.setup(int(gpio_relay),GPIO.OUT)
-  GPIO.setup(int(gpio_sensor),GPIO.IN)
   isok = 1
   isSum = 0
   oldSum = 0
   while True:
       lf1 = int(GPIO.input(int(gpio_sensor)))
       if lf1 == 1 and isok == 2:
-        time.sleep(0.03)
+        time.sleep(0.1)
         myLcd = myLcd + 10
-        #LCD_NUMBER(myLcd)
         isSum = isSum +1;
-        #print("send : ",isSum)
         MONEY = MONEY -10
         counter = counter -1
         isok=1
-        #print("Money : ",MONEY,counter)
-        if MONEY <= 0 :
+        json_data["wallet"]["out"] = json_data["wallet"]["out"] + 1
+        json_data["wallet"]["coin"] = json_data["wallet"]["coin"] - 1
+
+      if MONEY <= 0  and lf1 == 0 :
           GPIO.setup(int(gpio_relay),GPIO.IN)
           break
 
       if lf1 == 0 and isok == 1:
         isok=2
-        time.sleep(0.1)
+        time.sleep(0.03)
+
  finally:
      isok = 1
      isSum = 0
      oldSum = 0
-     #myLcd = 0
-     #LCD_NUMBER(MONEY)
      print("send",1)
+     update_data(json_data)
 
 def destroy():
     print("--------") 
@@ -501,14 +448,12 @@ def destroy():
 
 
 def sensor_callback(channel):
-    global counter,MONEY,status_gpi,time_start,time_end,ON_0,ON_1
+    global counter,MONEY,status_gpi,time_start,time_end,ON_0,ON_1,json_data
     checkGPOI = GPIO.input(channel)
     time_start = round(time.time(),1)
     if checkGPOI == 1 :
        time_start = round(time.time(),1)
        status_gpi = 1
-       #MONEY =0
-       #counter =0
 
     if checkGPOI == 0 :
        time_end = round(time.time(),1)
@@ -517,12 +462,16 @@ def sensor_callback(channel):
 
     if checkGPOI == 0 and status_gpi == 0 and checktime == 0:
        MONEY = MONEY +10
+       json_data["wallet"]["MONEY"] = json_data["wallet"]["MONEY"] + 10
+       json_data["wallet"]["in"] = json_data["wallet"]["in"] + 1
+       #update_data(json_data)
        counter = counter +1
        sendcoin_ok(counter)
 
 GPIO.add_event_detect(12,GPIO.FALLING,callback=sensor_callback)
 
 LCD_NUMBER(MONEY)
+
 def UpdateOnline(app,data):
     headers = {"Content-Type": "application/json"}
     url = str("https://app-wash.all123th.com/api/")+str(app)
@@ -560,8 +509,47 @@ def lcd_view():
     msg['msg'] = "ok"
     return jsonify(msg),200
 
+
+@app.route('/api',methods=['GET'])
+def get_api():
+    return jsonify(update_data(json_data)),200
+
+@app.route('/reset_all',methods=['GET'])
+def reset_all():
+    json_data["wallet"]["MONEY"] = 0
+    json_data["wallet"]["in"] = 0
+    json_data["wallet"]["out"] = 0
+    json_data["wallet"]["coin"] = 0
+    return jsonify(update_data(json_data)),200
+
+@app.route('/reset_in',methods=['GET'])
+def reset_in():
+    json_data["wallet"]["in"] = 0
+    return jsonify(update_data(json_data)),200
+
+@app.route('/reset_money',methods=['GET'])
+def reset_money():
+    json_data["wallet"]["MONEY"] = 0
+    return jsonify(update_data(json_data)),200
+
+@app.route('/reset_out',methods=['GET'])
+def reset_out():
+    json_data["wallet"]["out"] = 0
+    return jsonify(update_data(json_data)),200
+
+@app.route('/set',methods=['GET'])
+def reset_in_set():
+    pset = request.args.get('set')
+    if not pset:
+        return jsonify({"status": "error"}), 200
+    pval = request.args.get('val')
+    if not pval:
+        return jsonify({"status": "error"}), 200
+    json_data["wallet"][str(pset)] = int(pval)
+    return jsonify(update_data(json_data)),200
+
+
 if __name__ == '__main__':
     url = "http://localhost:"+str(API_PORT)
     subprocess.Popen(['chromium-browser','--start-fullscreen','--kiosk',url]) 
     app.run(host='0.0.0.0', port=API_PORT, debug=DEBUG_MODE)
-    LCDOFF()
