@@ -54,6 +54,22 @@ def favicon():
     msg['msg'] = "close"
     return jsonify(msg),200
 
+@app.route('/update',methods=['GET'])
+def get_update():
+    os.system("git pull https://github.com/bossware14/money.git")
+    os.system("pkill chromium")
+    msg = {}
+    msg['status'] = "success"
+    msg['msg'] = "update"
+    return jsonify(msg),200
+
+@app.route('/version')
+def version():
+    msg = {}
+    msg['version'] = 1.0
+    return jsonify(msg),200
+
+
 @app.route('/close')
 def close_app():
     os.system("pkill chromium")
@@ -408,6 +424,7 @@ def sensor(ch) :
      NORELAY = 0
      CC_SEN = 0
      update_data(json_data)
+     LCDOFF()
      print("Close")
 
    if mySession == 1 and isCheck == 0 :
@@ -416,7 +433,7 @@ def sensor(ch) :
      json_data["wallet"]["coin"] = json_data["wallet"]["coin"] + 10
      json_data["wallet"]["out"] = json_data["wallet"]["out"] + 1
 
-     #LCD_NUMBER(MONEY)
+     LCD_NUMBER(1)
      print("sensor",mySession)
 
    isCheck = mySession
