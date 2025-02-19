@@ -119,6 +119,10 @@
                         จัดการ
                     </ons-list-item>
 
+                    <ons-list-item onclick="fn.load('update.html')"  tappable>
+                        อัพเดท
+                    </ons-list-item>
+
                     <ons-list-item onclick="fn.load('closeApp.html')"  tappable>
                         ปิดแอป
                     </ons-list-item>
@@ -223,6 +227,51 @@ function login() {
                 }
 </script>
         </ons-page>
+    </template>
+
+
+    <template id="update.html">
+             <ons-page>
+     <ons-card>
+         Version : <span id="version">0</span>
+<div id="update">
+    <button onclick="UpdateVersion()"> Update</button>
+</div>
+<div id="newversion">
+    เวอร์ชั้นปัจบันแล้ว!
+</div>
+<script>
+$('#update').hide();
+    async function checkVersion(){
+        await $.getJSON('/version',function(str)
+        {
+            $('#version').html(str.version);
+          
+         version = str.version
+
+         $.getJSON('https://app-wash.all123th.com/money/version',function(strs)
+        {
+            if( version < strs.version){
+                alert('LastVersion')
+$('#update').show();
+$('#newversion').hide();
+            }
+        })
+    
+        })
+    }
+
+function UpdateVersion(){
+     $.getJSON('/update',function(str)
+        {
+       
+         })
+}
+
+checkVersion();
+</script>
+     </ons-card>
+ </ons-page>
     </template>
 
     <template id="alert-dialog.html">
