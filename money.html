@@ -107,9 +107,123 @@
 
 <body>
     <ons-splitter>
+        <ons-splitter-side id="menu" side="left" width="220px" collapse swipeable>
+            <ons-page>
+                <ons-list>
+                    
+                    <ons-list-item onclick="fn.load('tab3.html')"  tappable>
+                        Home
+                    </ons-list-item>
+
+                    <ons-list-item onclick="fn.load('AppApp.html')"  tappable>
+                        จัดการ
+                    </ons-list-item>
+
+                    <ons-list-item onclick="fn.load('closeApp.html')"  tappable>
+                        ปิดแอป
+                    </ons-list-item>
+                </ons-list>
+            </ons-page>
+        </ons-splitter-side>
         <ons-splitter-content id="content" page="tab3.html"></ons-splitter-content>
     </ons-splitter>
  
+    <template id="closeApp.html">
+        <ons-page id="login">
+            <div class="page page-center  container">
+                <ons-card>
+                    <h2 class="h2 text-center mb-4 mt-0">
+                        ยืนยันตัวตน
+                    </h2>
+                    <form autocomplete="off" novalidate>
+                        <h1>ปิดแอป</h1>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                รหัสผ่าน
+                            </label>
+                            <div class="input-group input-group-flat">
+                                <input class="form-control" type="password" name="password" id="password" placeholder="password" autocomplete="off">
+                                <span class="input-group-text">
+                                    <a onmousedown="changeType('password','text')" onclick="changeType('password','text')" onmouseout="changeType('password','password')" href="#" class="link-secondary" title="แสดงรหัสผ่าน" data-bs-toggle="tooltip"><!-- Download SVG icon from http://tabler-icons.io/i/eye -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                                            <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
+                                        </svg>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+               <div id="padtab">
+                 <ons-row>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(1)" style="font-size:20px" class="w-100 btn btn-dark">1</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(2)" style="font-size:20px" class="w-100 btn btn-dark">2</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(3)" style="font-size:20px" class="w-100 btn btn-dark">3</ons-button>
+                                </ons-col>
+                            </ons-row>
+                            <ons-row>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(4)" style="font-size:20px" class="w-100 btn btn-dark">4</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(5)" style="font-size:20px" class="w-100 btn btn-dark">5</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(6)" style="font-size:20px" class="w-100 btn btn-dark">6</ons-button>
+                                </ons-col>
+                            </ons-row>
+
+                            <ons-row>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(7)" style="font-size:20px" class="w-100 btn btn-dark">7</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(8)" style="font-size:20px" class="w-100 btn btn-dark">8</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(9)" style="font-size:20px" class="w-100 btn btn-dark">9</ons-button>
+                                </ons-col>
+                            </ons-row>
+                            <ons-row>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CLEARNO2()" style="font-size:20px" class="w-100 btn btn-danger">-</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(0)" style="font-size:20px" class="w-100 btn btn-dark">0</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="login()" style="font-size:20px" class="w-100 btn">OK</ons-button>
+                                </ons-col>
+ </ons-row>
+                        </div>
+                    </form>
+                </ons-card>
+            </div>
+<script>
+function CLEARNO2(){
+    $('#password').val('');
+}
+function login() {
+            var password = document.getElementById('password').value;
+            if (password === '789789') {
+                ons.notification.alert('Success!');
+                $.getJSON('/exit')
+            } else {
+                ons.notification.alert('password.');
+            }
+        };
+                function CHGPHONE2(number) {
+                    var phone = $('#password').val();
+                    $('#password').val(phone+number);
+                }
+</script>
+        </ons-page>
+    </template>
 
     <template id="alert-dialog.html">
         <ons-alert-dialog id="my-alert-dialog" modifier="rowfooter">
@@ -126,6 +240,205 @@
     </template>
 
 
+    <template id="AppApp.html">
+        <ons-page id="login">
+            <div class="page page-center  container">
+                <ons-card>
+                    <h2 class="h2 text-center mb-4 mt-0">
+                        ยืนยันตัวตน
+                    </h2>
+                    <form autocomplete="off" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                รหัสผ่าน
+                            </label>
+                            <div class="input-group input-group-flat">
+                                <input class="form-control" type="password" name="password" id="password" placeholder="password" autocomplete="off">
+                                <span class="input-group-text">
+                                    <a onmousedown="changeType('password','text')" onclick="changeType('password','text')" onmouseout="changeType('password','password')" href="#" class="link-secondary" title="แสดงรหัสผ่าน" data-bs-toggle="tooltip"><!-- Download SVG icon from http://tabler-icons.io/i/eye -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                                            <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
+                                        </svg>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+               <div id="padtab">
+                 <ons-row>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(1)" style="font-size:20px" class="w-100 btn btn-dark">1</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(2)" style="font-size:20px" class="w-100 btn btn-dark">2</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(3)" style="font-size:20px" class="w-100 btn btn-dark">3</ons-button>
+                                </ons-col>
+                            </ons-row>
+                            <ons-row>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(4)" style="font-size:20px" class="w-100 btn btn-dark">4</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(5)" style="font-size:20px" class="w-100 btn btn-dark">5</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(6)" style="font-size:20px" class="w-100 btn btn-dark">6</ons-button>
+                                </ons-col>
+                            </ons-row>
+
+                            <ons-row>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(7)" style="font-size:20px" class="w-100 btn btn-dark">7</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(8)" style="font-size:20px" class="w-100 btn btn-dark">8</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(9)" style="font-size:20px" class="w-100 btn btn-dark">9</ons-button>
+                                </ons-col>
+                            </ons-row>
+                            <ons-row>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CLEARNO2()" style="font-size:20px" class="w-100 btn btn-danger">-</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="CHGPHONE2(0)" style="font-size:20px" class="w-100 btn btn-dark">0</ons-button>
+                                </ons-col>
+                                <ons-col class="p-1">
+                                    <ons-button onclick="login()" style="font-size:20px" class="w-100 btn">OK</ons-button>
+                                </ons-col>
+ </ons-row>
+                        </div>
+                    </form>
+                </ons-card>
+            </div>
+<script>
+function CLEARNO2(){
+    $('#password').val('');
+}
+function login() {
+            var password = document.getElementById('password').value;
+            if (password === '789789') {
+                ons.notification.alert('Success!');
+                fn.load('settings.html')
+            } else {
+                ons.notification.alert('password.');
+            }
+        };
+                function CHGPHONE2(number) {
+                    var phone = $('#password').val();
+                    $('#password').val(phone+number);
+                }
+</script>
+        </ons-page>
+    </template>
+
+  <template id="settings.html">
+        <ons-page>
+            <script>
+                var cfg = {"device":"db46767m980se","modewash1":1,"modewash2":2,"modewash3":3,"temperature1":0,"temperature2":1};
+                function SaveCfg() {
+                    var data = $('#device').val();
+                    $.ajax({
+                        type: 'PUT',
+                        url: '/api/config/device',
+                        contentType: 'application/json',
+                        data: JSON.stringify(data),
+                    }).done(function () {
+                        alert('SUCCESS');
+                        location.reload()
+                    }).fail(function (msg) {
+                        alert('FAIL');
+                    })
+                }
+
+
+                function getData() {
+                    var data = $('#device').val();
+                    $.ajax({
+                        type: 'GET',
+                        url: '/api',
+                        contentType: 'application/json',
+                    }).done(function (str) {
+                        $('#MONEY').val(str.wallet.MONEY)
+                        $('#coin').val(str.wallet.coin)
+                        $('#in').val(str.wallet.in)
+                        $('#out').val(str.wallet.out)
+                        $('#qrcode').val(str.wallet.qrcode)
+                    }).fail(function (msg) {
+                        alert('FAIL');
+                    })
+                }
+getData() 
+            </script>
+            <ons-toolbar>
+                <div class="left">
+                    <ons-toolbar-button onclick="fn.open()">
+                        <ons-icon icon="md-menu"></ons-icon>
+                    </ons-toolbar-button>
+                </div>
+                <div class="center">
+                    Admin
+                </div>
+            </ons-toolbar>
+            <ons-card>
+                <ons-list>
+                    <ons-list-header>รายการ</ons-list-header>
+                    <ons-list-item>
+                        <div class="center">
+                            เงินเข้า
+                        </div>
+                        <div class="right">
+                            <ons-input id="in"  disabled type="number" min="0" max="200" input-id="pice_temp01" value="0" float placeholder="เหรียญ"></ons-input>
+                        </div>
+                    </ons-list-item>
+
+                    <ons-list-item>
+                        <div class="center">
+                            เงินออก
+                        </div>
+                        <div class="right">
+                            <ons-input id="out" disabled type="number" min="0" max="200" input-id="pice_temp02" value="1" float placeholder="เหรียญ"></ons-input>
+                        </div>
+                    </ons-list-item>
+                    <ons-list-item>
+                        <div class="center">
+                            QRCODE
+                        </div>
+                        <div class="right">
+                            <ons-input id="qrcode" disabled type="number" min="0" max="200" input-id="pice_temp02" value="1" float placeholder="ราคา"></ons-input>
+                        </div>
+                    </ons-list-item>
+
+                    <ons-list-item>
+                        <div class="center">
+                            จ่ายเงิน
+                        </div>
+                        <div class="right">
+                            <ons-input id="MONEY" disabled  type="number" min="0" max="200" input-id="pice_temp02" value="1" float placeholder="เหรียญ"></ons-input>
+                        </div>
+                    </ons-list-item>
+
+                    <ons-list-header>Reset</ons-list-header>
+                    <ons-list-item>
+                        <div class="center">
+                          <ons-button>Reset All</ons-button>
+                     
+                          <ons-button>Reset Money</ons-button>
+                      
+                          <ons-button>Reset In</ons-button>
+                    
+                          <ons-button>Reset Out</ons-button>
+                        </div>
+                    </ons-list-item>
+                </ons-list>
+
+            </ons-card>
+        </ons-page>
+    </template>
     <template id="dialog.html">
         <ons-dialog id="my-dialog">
             <div style="text-align: center; padding: 10px;">
