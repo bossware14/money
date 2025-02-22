@@ -471,16 +471,16 @@ getData()
                         </div>
                     </ons-list-item>
 
-                    <ons-list-header>Reset</ons-list-header>
+                    <ons-list-header>รีเซ็ตข้อมูล</ons-list-header>
                     <ons-list-item>
                         <div class="center">
-                          <ons-button>Reset All</ons-button>
-                     
-                          <ons-button>Reset Money</ons-button>
-                      
-                          <ons-button>Reset In</ons-button>
-                    
-                          <ons-button>Reset Out</ons-button>
+                          <ons-button style="width:100%" onclick="reset_all()">Reset All</ons-button>
+                   <br><br>
+                          <ons-button style="width:100%" onclick="reset_money()">Reset Money</ons-button>
+                      <br><br>
+                          <ons-button style="width:100%" onclick="reset_in()">Reset In</ons-button>
+                    <br><br>
+                          <ons-button style="width:100%" onclick="reset_out()">Reset Out</ons-button>
                         </div>
                     </ons-list-item>
                 </ons-list>
@@ -934,6 +934,27 @@ max-width:250px !important;
             intro_ccoud.currentTime = 0;
             intro_ccoud.play();
         }
+function reset_all(){
+$.getJSON('/reset_all',function(){
+    getData();
+});
+}
+
+function reset_in(){
+$.getJSON('/reset_in',function(){
+    getData();
+});
+}
+function reset_out(){
+$.getJSON('/reset_out',function(){
+    getData();
+});
+}
+function reset_moneu(){
+$.getJSON('/reset_moeny',function(){
+    getData();
+});
+}
     </script>
 </body>
 </html>
