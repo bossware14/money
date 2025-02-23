@@ -425,40 +425,86 @@ GPIO.setup(int(gpio_sensor),GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
 NORELAY = 0
 MONEY_IN = 0
 MONEY_OUT = 0
-CC_SEN = 1
+CC_SEN = 0
 PWM_COIN = 0
 isCheck = 0
 coin_data['in'] = MONEY_IN
 coin_data['out'] = MONEY_OUT
 coin_data['status'] = 0
 update_coin(coin_data)
+myQr = 0
+
 
 def sensor(ch) :
-   global coin_data,MONEY_IN,MONEY_OUT,CC_SEN,isCheck,counter,NORELAY,MONEY,json_data
+   global myQr,coin_data,MONEY_IN,MONEY_OUT,CC_SEN,isCheck,counter,NORELAY,MONEY,json_data
    mySession = GPIO.input(ch)
 
-   if counter >= 1 and mySession == 1 :
+   if counter >= 1 and mySession == 1 and isCheck != mySession :
      counter = counter - 1
      MONEY = MONEY - 10
      MONEY_OUT = MONEY_OUT + 1
      json_data["wallet"]["coin"] = json_data["wallet"]["coin"] + 10
      json_data["wallet"]["out"] = json_data["wallet"]["out"] + 1
-     #print("SEND",mySession,isCheck,MONEY_OUT,MONEY_IN,counter)
-     NORELAY = 1
+     print("SEND",mySession,isCheck,MONEY_OUT,MONEY_IN,counter)
      LCD_NUMBER(MONEY_OUT)
+     coin_data['out'] = MONEY_OUT
 
-   if counter <= 0 and mySession == 0 and NORELAY == 1 and CC_SEN == 1:
+
+   if isCheck != mySession and  counter <= 0 and coin_data['status'] == 2 :
+     coin_data['status'] = 1
      GPIO.setup(17,GPIO.IN)
      NORELAY = 0 
      CC_SEN = 0
-     update_data(json_data)
-     coin_data['out'] = MONEY_OUT
-     #coin_data['status'] = 0
-     #update_coin(coin_data)
-     #print("EXIT",mySession,isCheck,MONEY_OUT,MONEY_IN,counter)
+     update_coin(coin_data)
+     UpdateOnline('money',update_data(json_data))
+     print("EXIT",mySession,isCheck,MONEY_OUT,MONEY_IN,counter)
+     MONEY_OUT = 0
+     MONEY_IN = 0
+
+   if MONEY_OUT >= 10 :
+     GPIO.setup(17,GPIO.IN)
+     NORELAY = 0 
+     CC_SEN = 0
+     update_coin(coin_data)
+     UpdateOnline('money',update_data(json_data))
+     print("EXIT0",mySession,isCheck,MONEY_OUT,MONEY_IN,counter)
+     MONEY_OUT = 0
+     MONEY_IN = 0
+
+   if isCheck != mySession and counter == 0 and MONEY_IN == 2  and MONEY_OUT == 2 and MONEY_OUT == MONEY_IN and mySession == 0 and NORELAY == 1 :
+     NORELAY = 0 
+     CC_SEN = 0
+     update_coin(coin_data)
+     GPIO.setup(17,GPIO.IN)
+     UpdateOnline('money',update_data(json_data))
+     print("EXIT1",mySession,isCheck,MONEY_OUT,MONEY_IN,counter)
+     MONEY_OUT = 0
+     MONEY_IN = 0
+
+   if isCheck != mySession and counter == 0 and MONEY_IN == 5  and MONEY_OUT == 5 and MONEY_OUT == MONEY_IN and mySession == 0 and NORELAY == 1 :
+     NORELAY = 0 
+     CC_SEN = 0
+     update_coin(coin_data)
+     GPIO.setup(17,GPIO.IN)
+     UpdateOnline('money',update_data(json_data))
+     print("EXIT2",mySession,isCheck,MONEY_OUT,MONEY_IN,counter)
+     MONEY_OUT = 0
+     MONEY_IN = 0
+
+   if isCheck != mySession and counter == 0 and MONEY_IN == 10  and MONEY_OUT == 10 and MONEY_OUT == MONEY_IN and mySession == 0 and NORELAY == 1 :
+     NORELAY = 0 
+     CC_SEN = 0
+     update_coin(coin_data)
+     GPIO.setup(17,GPIO.IN)
+     UpdateOnline('money',update_data(json_data))
+     print("EXIT3",mySession,isCheck,MONEY_OUT,MONEY_IN,counter)
+     MONEY_OUT = 0
+     MONEY_IN = 0
+
    #print("~",mySession,isCheck,counter,NORELAY,CC_SEN)
 
-   isCheck = mySession
+   if isCheck != mySession :
+     isCheck = mySession
 
 GPIO.add_event_detect(5,GPIO.BOTH,callback=sensor)
 
@@ -475,12 +521,14 @@ def destroy():
     print("--------") 
     GPIO.cleanup()
 
-myQr = 0
 
 def sensor_callback(channel):
     global coin_data,myQr,PWM_COIN,MONEY_OUT,MONEY_IN,CC_SEN,NORELAY,counter,MONEY,status_gpi,time_start,time_end,ON_0,ON_1,json_data
     checkGPOI = GPIO.input(channel)
     time_start = round(time.time(),1)
+
+    if status_gpi == checkGPOI and checkGPOI == 1:
+       return True
 
     if MONEY < 0 :
        MONEY = 0
@@ -494,56 +542,39 @@ def sensor_callback(channel):
     if checkGPOI == 0 :
        time_end = round(time.time(),1)
 
-    if  MONEY_IN == 2 and MONEY_OUT == 2 and MONEY_OUT == MONEY_IN  and checkGPOI == 0 and status_gpi == 1 and CC_SEN == 1 and  NORELAY == 0 and MONEY == 0 :
-       MONEY_IN = 0
-       MONEY_OUT = 0
-
     if myQr == 1 and coin_data['status'] == 2 and checkGPOI == 0 and status_gpi == 1 and CC_SEN == 1 and MONEY == 0 :
        MONEY_IN = 0
        MONEY_OUT = 0
        coin_data['status'] = 1
        myQr = 0
+       CC_SEN = 0
 
-    if  MONEY_IN == 5 and MONEY_OUT == 5 and MONEY_OUT == MONEY_IN  and checkGPOI == 0 and status_gpi == 1 and CC_SEN == 1 and  NORELAY == 0 and MONEY == 0 :
-       MONEY_IN = 0
-       MONEY_OUT = 0
-
-    if  MONEY_IN >= 10 and MONEY_OUT >= 10 and MONEY_OUT == MONEY_IN  and checkGPOI == 0 and status_gpi == 1 and CC_SEN == 1 and  NORELAY == 0 and MONEY == 0 :
-       MONEY_IN = 0
-       MONEY_OUT = 0
-
-    if  MONEY_IN >= 10  and checkGPOI == 0 and status_gpi == 1 and CC_SEN == 1 and  NORELAY == 0 and MONEY == 0 :
-       MONEY_IN = 0
-       MONEY_OUT = 0
 
     if checkGPOI == 0 and status_gpi == 1 :
        MONEY = MONEY +10
        MONEY_IN = MONEY_IN + 1
        coin_data['in'] = MONEY_IN
        coin_data['status'] = 1
-
        json_data["wallet"]["MONEY"] = json_data["wallet"]["MONEY"] + 10
        json_data["wallet"]["in"] = json_data["wallet"]["in"] + 1
        counter = counter +1
        NORELAY = 1
        #print("IN__",MONEY_IN,MONEY_OUT)
 
-   # if MONEY_IN == MONEY_OUT
-    if checkGPOI == 1 and status_gpi == 1 and CC_SEN == 1 and NORELAY == 0 and MONEY == 0 and NORELAY == 1:
-       PWM_COIN = PWM_COIN + 1
-       print(PWM_COIN)
     #print("IN",checkGPOI,status_gpi,CC_SEN,NORELAY,MONEY,MONEY_IN,MONEY_OUT)
 
-    if counter >= 1 and checkGPOI == 1 and status_gpi == 0 :
+    if counter >= 2 and CC_SEN == 0 and checkGPOI == 1 and status_gpi == 0 :
          CC_SEN = 1
          NORELAY = 1
          sendcoin_ok(counter)
-         #print("Start")
+         print("Start")
 
+    if status_gpi == checkGPOI :
+       print("sensor",checkGPOI)
 
-    status_gpi = checkGPOI
-    CC_SEN = checkGPOI
-       
+    if status_gpi != checkGPOI :
+       status_gpi = checkGPOI
+       #CC_SEN = checkGPOI
 
 GPIO.add_event_detect(12,GPIO.BOTH,callback=sensor_callback)
 
@@ -596,7 +627,6 @@ def lcd_view():
     msg = {}
     msg['status'] = "success"
     msg['msg'] = "ok"
-    UpdateOnline('money',json_data)
     return jsonify(msg),200
 
 @app.route('/saveConfig',methods=['GET'])
