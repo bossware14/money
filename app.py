@@ -140,6 +140,7 @@ else:
     "out": 0,
     "coin": 0,
     "MONEY": 0,
+    "max": 100,
     "qrcode": 0,
     "payment": 'AUTO',
     "Agent": 'AUTO',
@@ -685,6 +686,15 @@ def reset_in_set():
         return jsonify({"status": "error"}), 200
     json_data["wallet"][str(pset)] = int(pval)
     return jsonify(update_data(json_data)),200
+
+@app.route('/set_max',methods=['GET'])
+def set_max():
+    pval = request.args.get('val')
+    if not pval:
+        return jsonify({"status": "error"}), 200
+    json_data["wallet"]['max'] = int(pval)
+    return jsonify(update_data(json_data)),200
+
 
 @app.route('/set_password',methods=['GET'])
 def set_passwird():
