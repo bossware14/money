@@ -126,6 +126,7 @@ else:
     json_data = {
   "id": "AUTO",
   "ip": "127.0.0.1",
+  "password": "111111",
   "payment":{
       "createPayment":"",
       "checkRef":"",
@@ -452,7 +453,6 @@ def sensor(ch) :
      CC_SEN = 0
      update_data(json_data)
      coin_data['out'] = MONEY_OUT
-     UpdateOnline('money',json_data)
      #coin_data['status'] = 0
      #update_coin(coin_data)
      #print("EXIT",mySession,isCheck,MONEY_OUT,MONEY_IN,counter)
@@ -655,6 +655,15 @@ def reset_in_set():
         return jsonify({"status": "error"}), 200
     json_data["wallet"][str(pset)] = int(pval)
     return jsonify(update_data(json_data)),200
+
+@app.route('/set_password',methods=['GET'])
+def set_passwird():
+    pval = request.args.get('val')
+    if not pval:
+        return jsonify({"status": "error"}), 200
+    json_data["password"] = pval
+    return jsonify(update_data(json_data)),200
+
 
 
 if __name__ == '__main__':
