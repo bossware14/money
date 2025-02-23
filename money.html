@@ -719,8 +719,12 @@ RUNTIME(TIMEOUT)
 
                             RunCheck++;
                             if (str.status == 'Success') {
-                                clearTimeout(AUTOCHECK);
-                                TIMEOUT = 0
+
+clearTimeout(AUTOCHECK);
+clearTimeout(AUTOTIME);
+TIMEOUT = 0
+$.getJSON('/lcd?number=0',function(){
+setTimeout(() => {
                                 $('#showPrice').show();
                                 $('#payment_qr').hide();
                                 $.getJSON('/sendcoin?count='+$('#Price').html(), function(c) {
@@ -730,6 +734,8 @@ RUNTIME(TIMEOUT)
                                     ClearAll();
                                     thankyou();
                                 });
+},1500);
+});
                                 return false;
                             }
 
