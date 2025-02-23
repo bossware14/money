@@ -124,7 +124,7 @@
                     </ons-list-item>
 
                     <ons-list-item onclick="fn.load('closeApp.html')"  tappable>
-                        ปิดแอป
+                        ปิด
                     </ons-list-item>
                 </ons-list>
             </ons-page>
@@ -140,7 +140,6 @@
                         ยืนยันตัวตน
                     </h2>
                     <form autocomplete="off" novalidate>
-                        <h1>ปิดแอป</h1>
                         <div class="mb-3">
                             <label class="form-label">
                                 รหัสผ่าน
@@ -217,6 +216,7 @@ function login() {
             if (password === '789789') {
                 ons.notification.alert('Success!');
                 $.getJSON('/exit')
+
             } else {
                 ons.notification.alert('password.');
             }
@@ -388,30 +388,20 @@ function login() {
   <template id="settings.html">
         <ons-page>
             <script>
-                var cfg = {"device":"db46767m980se","modewash1":1,"modewash2":2,"modewash3":3,"temperature1":0,"temperature2":1};
                 function SaveCfg() {
-                    var data = $('#device').val();
-                    $.ajax({
-                        type: 'PUT',
-                        url: '/api/config/device',
-                        contentType: 'application/json',
-                        data: JSON.stringify(data),
-                    }).done(function () {
-                        alert('SUCCESS');
-                        location.reload()
-                    }).fail(function (msg) {
-                        alert('FAIL');
-                    })
+                    var data = $('#Agent').val();
+                    $.getJSON('/saveConfig?Agent='+data)
                 }
 
 
                 function getData() {
-                    var data = $('#device').val();
+                    var data = $('#Agent').val();
                     $.ajax({
                         type: 'GET',
                         url: '/api',
                         contentType: 'application/json',
                     }).done(function (str) {
+                        $('#Agent').val(str.wallet.Agent)
                         $('#MONEY').val(str.wallet.MONEY)
                         $('#coin').val(str.wallet.coin)
                         $('#in').val(str.wallet.in)
@@ -422,6 +412,9 @@ function login() {
                     })
                 }
 getData() 
+
+
+
             </script>
             <ons-toolbar>
                 <div class="left">
@@ -435,10 +428,24 @@ getData()
             </ons-toolbar>
             <ons-card>
                 <ons-list>
-                    <ons-list-header>รายการ</ons-list-header>
+                    
+                    <ons-list-header>บัญชี Payment</ons-list-header>
                     <ons-list-item>
                         <div class="center">
-                            เงินเข้า
+                            Agent
+                        </div>
+                        <div class="center">
+                            <ons-input id="Agent" text="number" input-id="pice_temp01" value="Agent" float placeholder="Agent ID"></ons-input>
+                        </div>
+<div class="right">
+    <button class="btn btn-primary" onclick="SaveCfg()">Save</button>
+</div>
+                    </ons-list-item>
+
+                    <ons-list-header>รายการ</ons-list-header>
+                    <ons-list-item style="display:none;">
+                        <div class="center">
+                            ธนบัตร
                         </div>
                         <div class="right">
                             <ons-input id="in"  disabled type="number" min="0" max="200" input-id="pice_temp01" value="0" float placeholder="เหรียญ"></ons-input>
@@ -447,7 +454,7 @@ getData()
 
                     <ons-list-item>
                         <div class="center">
-                            เงินออก
+                            จ่ายเหรียญ
                         </div>
                         <div class="right">
                             <ons-input id="out" disabled type="number" min="0" max="200" input-id="pice_temp02" value="1" float placeholder="เหรียญ"></ons-input>
@@ -455,32 +462,32 @@ getData()
                     </ons-list-item>
                     <ons-list-item>
                         <div class="center">
-                            QRCODE
+                            สแกนจ่าย
                         </div>
                         <div class="right">
-                            <ons-input id="qrcode" disabled type="number" min="0" max="200" input-id="pice_temp02" value="1" float placeholder="ราคา"></ons-input>
+                            <ons-input id="qrcode" disabled type="number" min="0" max="200" input-id="pice_temp02" value="1" float placeholder="บาท"></ons-input>
                         </div>
                     </ons-list-item>
 
                     <ons-list-item>
                         <div class="center">
-                            จ่ายเงิน
+                            ธนบัตร
                         </div>
                         <div class="right">
-                            <ons-input id="MONEY" disabled  type="number" min="0" max="200" input-id="pice_temp02" value="1" float placeholder="เหรียญ"></ons-input>
+                            <ons-input id="MONEY" disabled  type="number" min="0" max="200" input-id="pice_temp02" value="1" float placeholder="บาท"></ons-input>
                         </div>
                     </ons-list-item>
 
                     <ons-list-header>รีเซ็ตข้อมูล</ons-list-header>
                     <ons-list-item>
                         <div class="center">
-                          <ons-button style="width:100%" onclick="reset_all()">Reset All</ons-button>
-                   <br><br>
-                          <ons-button style="width:100%" onclick="reset_money()">Reset Money</ons-button>
+                          <button class="w-100 btn btn-danger" style="width:100%" onclick="reset_all()">เริ่มนับใหม่ ทั้งหมด</button>
+                   <!--br><br>
+                          <ons-button style="width:100%" onclick="reset_money()">นับเงินใหม่</ons-button>
                       <br><br>
-                          <ons-button style="width:100%" onclick="reset_in()">Reset In</ons-button>
+                          <ons-button style="width:100%" onclick="reset_in()">เงินเข้า</ons-button>
                     <br><br>
-                          <ons-button style="width:100%" onclick="reset_out()">Reset Out</ons-button>
+                          <ons-button style="width:100%" onclick="reset_out()">เงินออก</ons-button-->
                         </div>
                     </ons-list-item>
                 </ons-list>
@@ -509,7 +516,7 @@ getData()
                 </div>
 
                 <ons-row>
-                    <ons-col class="me-2">
+                    <ons-col class="me-2" onclick="Coud()">
                         <div id="card-member m-2">
                             <div class="row">
                                 <div class="col-12 text-center">
@@ -526,7 +533,7 @@ max-width:250px !important;
                                         
                                     </div>
                                     <div>
-                                        <img id="payment_qr" class="border rounded" style="width:235px;max-height:235px;" width="100%"
+                                        <img id="payment_qr" onclick="PlayIntro()" class="border rounded" style="width:235px;max-height:235px;" width="100%"
                                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbF0JgqiEWN6wFHxWQCrIfllBR_qsNVq-1Cg&usqp=CAU">
                                     </div>
                                 </div>
@@ -609,25 +616,27 @@ max-width:250px !important;
                 var RunCheck = 0;
 
                 function createPayment(amount, ref, username, detail) {
-                    $.getJSON('https://app-wash.all123th.com/api/config', function(json) {
-                        $.getJSON('https://api.d-kub.com/createPayment?authoken='+json.device+'&amount='+amount+'&ref='+ref+'&username='+username+'&detail='+detail,
+                    $.getJSON('/api', function(json) {
+                        $.getJSON('https://merchant.all123th.com/api?Agent='+json.wallet.Agent+'&amount='+amount+'&ref='+ref+'&username='+username+'&detail='+detail,
+                        //$.getJSON('https://api.d-kub.com/createPayment?amount='+amount+'&ref='+ref+'&username='+username+'&detail='+detail,
                             function(str) {
                                 RunCheck = 0;
                                 $('#showPrice').hide();
                                 $('#payment_qr').show();
                                 console.log(str)
-                                keyref = str.key;
-                                checkRef(str.key)
-                                $('#payment_qr').attr('src', str.image);
+                                keyref = str.refId;
+                                checkRef(str.refId)
+                                $('#payment_qr').attr('src', str.img);
                             })
                     })
                 }
 
                 function checkRef(key) {
-                    $.getJSON('https://api.d-kub.com/swift?key='+key+'&type=json',
+                    $.getJSON('https://api.all123th.com/payment-swiftpay/'+key+'?type=json',
+                    //$.getJSON('https://api.d-kub.com/swift?key='+key+'&type=json',
                         function(str) {
                             console.log(str)
-                            if (RunCheck >= 5) {
+                            if (RunCheck >= 10) {
                                 $('.btn').prop('disabled', false);
                                 $('button').prop('disabled', false);
                                 createAlertDialog('หมดเวลา', 'กรุณาทำรายการใหม่');
@@ -637,7 +646,7 @@ max-width:250px !important;
                             }
 
                             RunCheck++;
-                            if (str.status == 'success') {
+                            if (str.status == 'Success') {
                                 //clearInterval(AUTOCHECK);
                                 $('#showPrice').show();
                                 $('#payment_qr').hide();
@@ -650,7 +659,7 @@ max-width:250px !important;
                                 return false;
                             }
 
-                            if (str.status == 'failed') {
+                            if (str.status == 'Failed') {
                                 $('.btn').prop('disabled', false);
                                 $('button').prop('disabled', false);
                                 ClearAll()
@@ -666,7 +675,7 @@ max-width:250px !important;
                             }
 
                             AUTOCHECK = setTimeout(() => {
-                                checkRef(key)
+                                checkRef(keyref)
                             }, 5000);
                         });
                 }
@@ -892,6 +901,9 @@ max-width:250px !important;
     <audio id="intro_ccoud" src="https://app-wash.all123th.com/sound/intro_ccoud.mp3" autostart="false">
         <source src="https://app-wash.all123th.com/sound/intro_ccoud.mp3" type="audio/mpeg">
     </audio>
+    <audio id="intro" src="https://app-wash.all123th.com/sound/boss_coin.mp4" autostart="false">
+        <source src="https://app-wash.all123th.com/sound/boss_coin.mp4" type="audio/mpeg">
+    </audio>
     <script>
         var sound_click = document.getElementById("sound_click");
         var sound_sure = document.getElementById("sound_sure");
@@ -899,6 +911,7 @@ max-width:250px !important;
         var sound_Error = document.getElementById("sound_Error");
         var sound_win = document.getElementById("sound_win");
         var intro_ccoud = document.getElementById("intro_ccoud");
+        var intro = document.getElementById("intro");
 
         function Click() {
             sound_click.currentTime = 0;
@@ -931,9 +944,17 @@ max-width:250px !important;
         }
 
         function Coud() {
-            intro_ccoud.currentTime = 0;
+            //intro_ccoud.currentTime = 0;
             intro_ccoud.play();
         }
+
+        function PlayIntro() {
+            //intro.currentTime = 0;
+            intro.play();
+        }
+
+Coud();
+
 function reset_all(){
 $.getJSON('/reset_all',function(){
     getData();
