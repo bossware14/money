@@ -1,0 +1,7 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Terminal=true
+Type=Application
+Name=เริ่มแอป
+Exec=/usr/bin/python3  ~/money/app.py &
