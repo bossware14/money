@@ -80,6 +80,8 @@ def close_app():
 
 @app.route('/exit')
 def close_exit(): 
+    GPIO.setup(17,GPIO.IN)
+    LCDOFF()
     os.system("pkill chromium")
     os.system("fuser -k 5000/tcp")
     msg = {}
@@ -111,6 +113,11 @@ def get_ip():
         s.close()
     return IP
 
+if os.path.isfile('coin_data.json'):
+    with open('coin_data.json', 'r') as f:
+      coin_data = json.load(f)
+else:
+    coin_data = {"in":0,"out":0,"status":0}
 
 if os.path.isfile('main.json'):
     with open('main.json', 'r') as f:
@@ -142,6 +149,11 @@ else:
 tz = timezone(timedelta(hours = 7))
 json_data['id'] = socket.gethostname()
 json_data['ip'] = get_ip()
+
+def update_coin(coin_data):
+    with open('coin_data.json', 'w') as f:
+        json.dump(coin_data, f) 
+    return coin_data
 
 def update_data(json_data):
     json_data['id'] = socket.gethostname()
@@ -287,7 +299,7 @@ class TM1637:
         GPIO.setup(self.__Datapin, GPIO.IN)
 
         while(GPIO.input(self.__Datapin)):
-            sleep(0.001)
+           # sleep(0.001)
             if(GPIO.input(self.__Datapin)):
                 GPIO.setup(self.__Datapin, GPIO.OUT)
                 GPIO.output(self.__Datapin, GPIO.LOW)
@@ -391,9 +403,6 @@ def LCD_NUMBER(scrap1):
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
-#update
-#sudo apt remove python3-rpi.gpio
-#pip3 install rpi-lgpio
 
 gpio_sensor = 5  # เซนเซอร์นับเหรียญ
 gpio_relay = 17
@@ -409,32 +418,45 @@ isSum = 0
 myLcd = 0
 GPIO.setup(17,GPIO.IN)
 GPIO.setup(12,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(int(gpio_sensor),GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
 
-GPIO.setup(int(gpio_sensor),GPIO.IN)
-#GPIO.add_event_detect(int(gpio_sensor),GPIO.BOTH,callback=sensor_callback2)
-NORELAY = 1
 
+NORELAY = 0
+MONEY_IN = 0
+MONEY_OUT = 0
+CC_SEN = 1
+PWM_COIN = 0
 isCheck = 0
-def sensor(ch) :
-   global CC_SEN,isCheck,counter,NORELAY,MONEY,json_data
-   mySession = GPIO.input(ch)
-   #print("GPIO17",GPIO.output(17,0))
-   if counter <= 0 and NORELAY == 1 :
-     GPIO.setup(17,GPIO.IN)
-     NORELAY = 0
-     CC_SEN = 0
-     update_data(json_data)
-     LCDOFF()
-     print("Close")
+coin_data['in'] = MONEY_IN
+coin_data['out'] = MONEY_OUT
+coin_data['status'] = 0
+update_coin(coin_data)
 
-   if mySession == 1 and isCheck == 0 :
+def sensor(ch) :
+   global coin_data,MONEY_IN,MONEY_OUT,CC_SEN,isCheck,counter,NORELAY,MONEY,json_data
+   mySession = GPIO.input(ch)
+
+   if counter >= 1 and mySession == 1 :
      counter = counter - 1
      MONEY = MONEY - 10
+     MONEY_OUT = MONEY_OUT + 1
      json_data["wallet"]["coin"] = json_data["wallet"]["coin"] + 10
      json_data["wallet"]["out"] = json_data["wallet"]["out"] + 1
+     #print("SEND",mySession,isCheck,MONEY_OUT,MONEY_IN,counter)
+     NORELAY = 1
+     LCD_NUMBER(MONEY_OUT)
 
-     LCD_NUMBER(1)
-     print("sensor",mySession)
+   if counter <= 0 and mySession == 0 and NORELAY == 1 and CC_SEN == 1:
+     GPIO.setup(17,GPIO.IN)
+     NORELAY = 0 
+     CC_SEN = 0
+     update_data(json_data)
+     coin_data['out'] = MONEY_OUT
+     UpdateOnline('money',json_data)
+     #coin_data['status'] = 0
+     #update_coin(coin_data)
+     #print("EXIT",mySession,isCheck,MONEY_OUT,MONEY_IN,counter)
+   #print("~",mySession,isCheck,counter,NORELAY,CC_SEN)
 
    isCheck = mySession
 
@@ -453,32 +475,71 @@ def destroy():
     print("--------") 
     GPIO.cleanup()
 
+myQr = 0
 
-CC_SEN = 0
 def sensor_callback(channel):
-    global CC_SEN,NORELAY,counter,MONEY,status_gpi,time_start,time_end,ON_0,ON_1,json_data
+    global coin_data,myQr,PWM_COIN,MONEY_OUT,MONEY_IN,CC_SEN,NORELAY,counter,MONEY,status_gpi,time_start,time_end,ON_0,ON_1,json_data
     checkGPOI = GPIO.input(channel)
     time_start = round(time.time(),1)
+
+    if MONEY < 0 :
+       MONEY = 0
+
+    if counter < 0 :
+       counter = 0
+
     if checkGPOI == 1 :
        time_start = round(time.time(),1)
-       #status_gpi = 1
 
     if checkGPOI == 0 :
        time_end = round(time.time(),1)
-       #status_gpi = 0
 
-    if checkGPOI == 1 and status_gpi == 0 :
+    if  MONEY_IN == 2 and MONEY_OUT == 2 and MONEY_OUT == MONEY_IN  and checkGPOI == 0 and status_gpi == 1 and CC_SEN == 1 and  NORELAY == 0 and MONEY == 0 :
+       MONEY_IN = 0
+       MONEY_OUT = 0
+
+    if myQr == 1 and coin_data['status'] == 2 and checkGPOI == 0 and status_gpi == 1 and CC_SEN == 1 and MONEY == 0 :
+       MONEY_IN = 0
+       MONEY_OUT = 0
+       coin_data['status'] = 1
+       myQr = 0
+
+    if  MONEY_IN == 5 and MONEY_OUT == 5 and MONEY_OUT == MONEY_IN  and checkGPOI == 0 and status_gpi == 1 and CC_SEN == 1 and  NORELAY == 0 and MONEY == 0 :
+       MONEY_IN = 0
+       MONEY_OUT = 0
+
+    if  MONEY_IN >= 10 and MONEY_OUT >= 10 and MONEY_OUT == MONEY_IN  and checkGPOI == 0 and status_gpi == 1 and CC_SEN == 1 and  NORELAY == 0 and MONEY == 0 :
+       MONEY_IN = 0
+       MONEY_OUT = 0
+
+    if  MONEY_IN >= 10  and checkGPOI == 0 and status_gpi == 1 and CC_SEN == 1 and  NORELAY == 0 and MONEY == 0 :
+       MONEY_IN = 0
+       MONEY_OUT = 0
+
+    if checkGPOI == 0 and status_gpi == 1 :
        MONEY = MONEY +10
+       MONEY_IN = MONEY_IN + 1
+       coin_data['in'] = MONEY_IN
+       coin_data['status'] = 1
+
        json_data["wallet"]["MONEY"] = json_data["wallet"]["MONEY"] + 10
        json_data["wallet"]["in"] = json_data["wallet"]["in"] + 1
        counter = counter +1
-       #LCD_NUMBER(MONEY) 
-       if counter >= 1 and CC_SEN == 0 :
+       NORELAY = 1
+       #print("IN__",MONEY_IN,MONEY_OUT)
+
+   # if MONEY_IN == MONEY_OUT
+    if checkGPOI == 1 and status_gpi == 1 and CC_SEN == 1 and NORELAY == 0 and MONEY == 0 and NORELAY == 1:
+       PWM_COIN = PWM_COIN + 1
+       print(PWM_COIN)
+    #print("IN",checkGPOI,status_gpi,CC_SEN,NORELAY,MONEY,MONEY_IN,MONEY_OUT)
+
+    if counter >= 1 and checkGPOI == 1 and status_gpi == 0 :
          CC_SEN = 1
          NORELAY = 1
          sendcoin_ok(counter)
+         #print("Start")
 
-    #print(MONEY,checkGPOI,status_gpi)
 
     status_gpi = checkGPOI
     CC_SEN = checkGPOI
@@ -492,12 +553,11 @@ def UpdateOnline(app,data):
     headers = {"Content-Type": "application/json"}
     url = str("https://app-wash.all123th.com/api/")+str(app)
     requests.put(url, data=json.dumps(data), headers=headers)
-    url = "http://localhost:"+str(API_PORT)
-    subprocess.Popen(['chromium-browser','--start-fullscreen','--kiosk',url]) 
+
 
 @app.route('/sendcoin',methods=['GET'])
 def send_coint():
-    global counter,MONEY,NORELAY,CC_SEN,json_data
+    global myQr,MONEY_OUT,MONEY_IN,counter,MONEY,NORELAY,CC_SEN,json_data
     count = int(request.args.get('count'))
     if not count:
         LCDOFF()
@@ -510,14 +570,17 @@ def send_coint():
         counter = 0
         return jsonify({"status": "error"}), 200
 
-    counter = count/10
+    counter = round(count/10)
     MONEY = count
+    MONEY_IN = counter
+    MONEY_OUT = 0
     LCD_NUMBER(MONEY)
+    time.sleep(1)
     json_data["wallet"]["qrcode"] = json_data["wallet"]["qrcode"] + MONEY
-    CC_SEN = 0
+    CC_SEN = 1
     NORELAY = 1
-
-    #GPIO.setup(17,GPIO.OUT)
+    myQr = 1
+    coin_data['status'] = 2
     sendcoin_ok(counter)
     msg = {}
     msg['status'] = "success"
@@ -533,12 +596,30 @@ def lcd_view():
     msg = {}
     msg['status'] = "success"
     msg['msg'] = "ok"
+    UpdateOnline('money',json_data)
+    return jsonify(msg),200
+
+@app.route('/saveConfig',methods=['GET'])
+def saveConfig():
+    Agent = request.args.get('Agent')
+    if not Agent:
+        return jsonify({"status": "error"}), 200
+    msg = {}
+    msg['status'] = "success"
+    msg['msg'] = "ok"
+    json_data['wallet']['Agent'] = Agent
+    UpdateOnline('money',update_data(json_data))
     return jsonify(msg),200
 
 
 @app.route('/api',methods=['GET'])
 def get_api():
     return jsonify(update_data(json_data)),200
+@app.route('/coin',methods=['GET'])
+
+def get_coin():
+    return jsonify(update_coin(coin_data)),200
+
 
 @app.route('/reset_all',methods=['GET'])
 def reset_all():
@@ -584,3 +665,4 @@ if __name__ == '__main__':
   finally:
     GPIO.setup(17,GPIO.IN)
     LCDOFF()
+    os.system("clear")
