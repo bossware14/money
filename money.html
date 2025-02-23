@@ -587,7 +587,7 @@ max-width:250px !important;
                                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbF0JgqiEWN6wFHxWQCrIfllBR_qsNVq-1Cg&usqp=CAU">
                                     </div>
                                 </div>
-                                <div class="col-12 text-center">
+                                <div onclick="PlayIntro()" class="col-12 text-center">
                                     <img style="max-height:50px;" class="mt-2" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdndEW1NXNFi-MBmS8QX-6DgJghX2HpJOh_aMJ0Zjj1TTzNWTgpQa8bqw&s=10">
                                 </div>
                             </div>
@@ -664,6 +664,7 @@ max-width:250px !important;
 
                 var keyref = ''
                 var RunCheck = 0;
+var TIMEOUT = 50
 
                 function createPayment(amount, ref, username, detail) {
                     $.getJSON('/api', function(json) {
@@ -671,6 +672,8 @@ max-width:250px !important;
                         //$.getJSON('https://api.d-kub.com/createPayment?amount='+amount+'&ref='+ref+'&username='+username+'&detail='+detail,
                             function(str) {
                                 RunCheck = 0;
+                                TIMEOUT = 50
+                                RUNTIME(TIMEOUT)
                                 $('#showPrice').hide();
                                 $('#payment_qr').show();
                                 console.log(str)
@@ -681,11 +684,30 @@ max-width:250px !important;
                     })
                 }
 
+function RUNTIME(TIMEOUT){
+if(TIMEOUT <= 0){
+    return false;
+}
+
+if($('#phone').val() == ''){
+    return false;
+}
+
+TIMEOUT = TIMEOUT - 1
+$.getJSON('/lcd?number='+TIMEOUT,function(str) {
+AUTOTIME = setTimeout(() => {
+RUNTIME(TIMEOUT)
+},1000);
+});
+}
                 function checkRef(key) {
                     $.getJSON('https://api.all123th.com/payment-swiftpay/'+key+'?type=json',
                     //$.getJSON('https://api.d-kub.com/swift?key='+key+'&type=json',
                         function(str) {
                             console.log(str)
+                            if (RunCheck == 7) {
+                                lastendtime();
+                            }
                             if (RunCheck >= 10) {
                                 $('.btn').prop('disabled', false);
                                 $('button').prop('disabled', false);
@@ -697,7 +719,8 @@ max-width:250px !important;
 
                             RunCheck++;
                             if (str.status == 'Success') {
-                                //clearInterval(AUTOCHECK);
+                                clearTimeout(AUTOCHECK);
+                                TIMEOUT = 0
                                 $('#showPrice').show();
                                 $('#payment_qr').hide();
                                 $.getJSON('/sendcoin?count='+$('#Price').html(), function(c) {
@@ -705,6 +728,7 @@ max-width:250px !important;
                                     $('button').prop('disabled', false);
                                     createAlertDialog('สำเร็จ', 'ทำรายการเรียบร้อยแล้ว '+ $('#Price').html()+' บาท');
                                     ClearAll();
+                                    thankyou();
                                 });
                                 return false;
                             }
@@ -951,8 +975,15 @@ max-width:250px !important;
     <audio id="intro_ccoud" src="https://app-wash.all123th.com/sound/intro_ccoud.mp3" autostart="false">
         <source src="https://app-wash.all123th.com/sound/intro_ccoud.mp3" type="audio/mpeg">
     </audio>
-    <audio id="intro" src="https://app-wash.all123th.com/sound/boss_coin.mp4" autostart="false">
-        <source src="https://app-wash.all123th.com/sound/boss_coin.mp4" type="audio/mpeg">
+    <audio id="intro" src="https://app-wash.all123th.com/sound/mplus.mp4" autostart="false">
+        <source src="https://app-wash.all123th.com/sound/mplus.mp4" type="audio/mpeg">
+    </audio>
+    <audio id="endtime" src="https://app-wash.all123th.com/sound/endtime.mp4" autostart="false">
+        <source src="https://app-wash.all123th.com/sound/endtime.mp4" type="audio/mpeg">
+    </audio>
+
+    <audio id="thankyou" src="https://app-wash.all123th.com/sound/thankyou.mp4" autostart="false">
+        <source src="https://app-wash.all123th.com/sound/thankyou.mp4" type="audio/mpeg">
     </audio>
     <script>
         var sound_click = document.getElementById("sound_click");
@@ -962,6 +993,8 @@ max-width:250px !important;
         var sound_win = document.getElementById("sound_win");
         var intro_ccoud = document.getElementById("intro_ccoud");
         var intro = document.getElementById("intro");
+        var thank_you = document.getElementById("thankyou");
+        var endtime = document.getElementById("endtime");
 
         function Click() {
             sound_click.currentTime = 0;
@@ -973,7 +1006,18 @@ max-width:250px !important;
             sound_sweep.play();
         }
 
+function lastendtime(){
+            endtime.currentTime = 0;
+            endtime.play();
+}
+        function thankyou() {
+            thank_you.currentTime = 0;
+            thank_you.play();
+        }
+
         function Sure() {
+            intro.pause()
+            intro.currentTime = 0;
             sound_sure.currentTime = 0;
             sound_sure.play();
         }
@@ -1004,6 +1048,7 @@ max-width:250px !important;
         }
 
 Coud();
+
 
 function reset_all(){
 $.getJSON('/reset_all',function(){
