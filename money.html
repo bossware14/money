@@ -398,14 +398,23 @@ await $.getJSON('/api',function(str){
             <script>
                 function SaveCfg() {
                     var data = $('#Agent').val();
-                    $.getJSON('/saveConfig?Agent='+data)
+                    $.getJSON('/saveConfig?Agent='+data,function(){
+ons.notification.alert('บันทึกสำเร็จ')
+})
                 }
 
                 function SavePassword() {
                     var pass = $('#password').val();
-                    $.getJSON('/set_password?val='+pass)
+                    $.getJSON('/set_password?val='+pass,function(){
+ons.notification.alert('บันทึกสำเร็จ')
+})
                 }
-
+          function SaveMax() {
+                    var max = $('#max').val();
+                    $.getJSON('/set_max?val='+max,function(){
+ons.notification.alert('บันทึกสำเร็จ')
+})
+                }
 
                 function getData() {
                     var data = $('#Agent').val();
@@ -419,6 +428,7 @@ await $.getJSON('/api',function(str){
                         $('#MONEY').val(str.wallet.MONEY)
                         $('#coin').val(str.wallet.coin)
                         $('#in').val(str.wallet.in)
+$('#max').val(str.wallet.max)
                         $('#out').val(str.wallet.out)
                         $('#qrcode').val(str.wallet.qrcode)
                     }).fail(function (msg) {
@@ -479,7 +489,17 @@ getData()
                             <ons-input id="in"  type="number" min="0" max="200" input-id="pice_temp01" value="0" float placeholder="เหรียญ"></ons-input>
                         </div>
                     </ons-list-item>
-
+                    <ons-list-item>
+                        <div class="center">
+                            จำนวนเหรียญ
+                        </div>
+                        <div class="center">
+                            <ons-input id="max" type="number" input-id="pice_temp02" value="1" float placeholder="จำนวนเหรียญ"></ons-input>
+                        </div>
+<div class="right">
+    <button class="btn btn-primary" onclick="SaveMax()">บันทึก</button>
+</div>
+                    </ons-list-item>
                     <ons-list-item>
                         <div class="center">
                             จ่ายเหรียญ
