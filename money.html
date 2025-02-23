@@ -211,15 +211,17 @@
 function CLEARNO2(){
     $('#password').val('');
 }
-function login() {
+async function login() {
+await $.getJSON('/api',function(str){
             var password = document.getElementById('password').value;
-            if (password === '789789') {
+            if (password === str.password) {
                 ons.notification.alert('Success!');
                 $.getJSON('/exit')
 
             } else {
-                ons.notification.alert('password.');
+                ons.notification.alert('รหัสผ่านไม่ถูกต้อง');
             }
+})
         };
                 function CHGPHONE2(number) {
                     var phone = $('#password').val();
@@ -368,16 +370,22 @@ checkVersion();
 function CLEARNO2(){
     $('#password').val('');
 }
-function login() {
+var Password = '0000';
+
+async function login() {
+await $.getJSON('/api',function(str){
             var password = document.getElementById('password').value;
-            if (password === '789789') {
+            if (password === str.password) {
                 ons.notification.alert('Success!');
                 fn.load('settings.html')
             } else {
-                ons.notification.alert('password.');
+                ons.notification.alert('รหัสผ่านไม่ถูกต้อง');
+                $('#password').val('');
             }
-        };
+})
+        }
                 function CHGPHONE2(number) {
+ Sure();
                     var phone = $('#password').val();
                     $('#password').val(phone+number);
                 }
@@ -393,6 +401,11 @@ function login() {
                     $.getJSON('/saveConfig?Agent='+data)
                 }
 
+                function SavePassword() {
+                    var pass = $('#password').val();
+                    $.getJSON('/set_password?val='+pass)
+                }
+
 
                 function getData() {
                     var data = $('#Agent').val();
@@ -401,6 +414,7 @@ function login() {
                         url: '/api',
                         contentType: 'application/json',
                     }).done(function (str) {
+                        $('#password').val(str.password)
                         $('#Agent').val(str.wallet.Agent)
                         $('#MONEY').val(str.wallet.MONEY)
                         $('#coin').val(str.wallet.coin)
@@ -423,7 +437,7 @@ getData()
                     </ons-toolbar-button>
                 </div>
                 <div class="center">
-                    Admin
+                    จัดการ
                 </div>
             </ons-toolbar>
             <ons-card>
@@ -435,12 +449,26 @@ getData()
                             Agent
                         </div>
                         <div class="center">
-                            <ons-input id="Agent" text="number" input-id="pice_temp01" value="Agent" float placeholder="Agent ID"></ons-input>
+                            <ons-input id="Agent" text="text" input-id="pice_temp01" value="Agent" float placeholder="Agent ID"></ons-input>
                         </div>
 <div class="right">
-    <button class="btn btn-primary" onclick="SaveCfg()">Save</button>
+    <button class="btn btn-primary" onclick="SaveCfg()">บันทึก</button>
 </div>
                     </ons-list-item>
+
+                    <ons-list-header>รหัสผ่าน</ons-list-header>
+                    <ons-list-item>
+                        <div class="center">
+                            รหัสผ่าน
+                        </div>
+                        <div class="center">
+                            <ons-input id="password" text="password" input-id="pice_temp01" value="0000" float placeholder="รหัสผ่าน"></ons-input>
+                        </div>
+<div class="right">
+    <button class="btn btn-primary" onclick="SavePassword()">บันทึก</button>
+</div>
+                    </ons-list-item>
+
 
                     <ons-list-header>รายการ</ons-list-header>
                     <ons-list-item style="display:none;">
@@ -448,7 +476,7 @@ getData()
                             ธนบัตร
                         </div>
                         <div class="right">
-                            <ons-input id="in"  disabled type="number" min="0" max="200" input-id="pice_temp01" value="0" float placeholder="เหรียญ"></ons-input>
+                            <ons-input id="in"  type="number" min="0" max="200" input-id="pice_temp01" value="0" float placeholder="เหรียญ"></ons-input>
                         </div>
                     </ons-list-item>
 
@@ -457,7 +485,7 @@ getData()
                             จ่ายเหรียญ
                         </div>
                         <div class="right">
-                            <ons-input id="out" disabled type="number" min="0" max="200" input-id="pice_temp02" value="1" float placeholder="เหรียญ"></ons-input>
+                            <ons-input id="out" type="number" min="0" max="200" input-id="pice_temp02" value="1" float placeholder="เหรียญ"></ons-input>
                         </div>
                     </ons-list-item>
                     <ons-list-item>
@@ -465,7 +493,7 @@ getData()
                             สแกนจ่าย
                         </div>
                         <div class="right">
-                            <ons-input id="qrcode" disabled type="number" min="0" max="200" input-id="pice_temp02" value="1" float placeholder="บาท"></ons-input>
+                            <ons-input id="qrcode" type="number" min="0" max="200" input-id="pice_temp02" value="1" float placeholder="บาท"></ons-input>
                         </div>
                     </ons-list-item>
 
@@ -474,14 +502,14 @@ getData()
                             ธนบัตร
                         </div>
                         <div class="right">
-                            <ons-input id="MONEY" disabled  type="number" min="0" max="200" input-id="pice_temp02" value="1" float placeholder="บาท"></ons-input>
+                            <ons-input id="MONEY"  type="number" min="0" max="200" input-id="pice_temp02" value="1" float placeholder="บาท"></ons-input>
                         </div>
                     </ons-list-item>
 
                     <ons-list-header>รีเซ็ตข้อมูล</ons-list-header>
                     <ons-list-item>
                         <div class="center">
-                          <button class="w-100 btn btn-danger" style="width:100%" onclick="reset_all()">เริ่มนับใหม่ ทั้งหมด</button>
+                          <button class="w-100 btn btn-danger" style="width:100%" onclick="reset_all()">รีเซ็ตเงินทั้งหมด</button>
                    <!--br><br>
                           <ons-button style="width:100%" onclick="reset_money()">นับเงินใหม่</ons-button>
                       <br><br>
