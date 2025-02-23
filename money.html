@@ -220,6 +220,7 @@ await $.getJSON('/api',function(str){
 
             } else {
                 ons.notification.alert('รหัสผ่านไม่ถูกต้อง');
+                fn.load('tab3.html')
             }
 })
         };
@@ -381,6 +382,7 @@ await $.getJSON('/api',function(str){
             } else {
                 ons.notification.alert('รหัสผ่านไม่ถูกต้อง');
                 $('#password').val('');
+fn.load('tab3.html')
             }
 })
         }
@@ -455,8 +457,8 @@ getData()
                     
                     <ons-list-header>บัญชี Payment</ons-list-header>
                     <ons-list-item>
-                        <div class="center">
-                            Agent
+                        <div class="left">
+                            PaymentID
                         </div>
                         <div class="center">
                             <ons-input id="Agent" text="text" input-id="pice_temp01" value="Agent" float placeholder="Agent ID"></ons-input>
@@ -468,8 +470,8 @@ getData()
 
                     <ons-list-header>รหัสผ่าน</ons-list-header>
                     <ons-list-item>
-                        <div class="center">
-                            รหัสผ่าน
+                        <div class="left">
+                            Password
                         </div>
                         <div class="center">
                             <ons-input id="password" text="password" input-id="pice_temp01" value="0000" float placeholder="รหัสผ่าน"></ons-input>
@@ -490,7 +492,7 @@ getData()
                         </div>
                     </ons-list-item>
                     <ons-list-item>
-                        <div class="center">
+                        <div class="left">
                             จำนวนเหรียญ
                         </div>
                         <div class="center">
